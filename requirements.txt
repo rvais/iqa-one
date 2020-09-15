@@ -6,7 +6,7 @@ nest_asyncio
 requests
 PyYAML
 optconstruct
-amqcfg
+git+git://github.com/rh-messaging-qe/yacfg@master#egg=yacfg
 python-qpid-proton
 dpath
 urllib3
