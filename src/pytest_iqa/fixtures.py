@@ -6,6 +6,10 @@ import pytest
 from iqa.instance.instance import Instance
 from iqa.utils.types import ComponentType, ReceiverSubtype, SenderSubtype
 
+@pytest.yield_fixture(autouse=True)
+def newline_before_logging(request):
+    if request.config.getoption('capture') == 'no':
+        print()  # new-line
 
 @pytest.fixture()
 def iqa(request) -> Instance:

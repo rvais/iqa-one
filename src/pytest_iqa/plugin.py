@@ -6,6 +6,8 @@ import atexit
 import os
 from logging import Logger
 
+from pytest import mark
+
 from _pytest.config.argparsing import Parser, OptionGroup
 from _pytest.python import Function
 
@@ -34,7 +36,7 @@ def pytest_addoption(parser: Parser) -> None:
         '--inventory',
         action='store',
         dest='inventory',
-        required=True,
+        required=False,
         metavar='INVENTORY',
         help='Inventory file to use',
     )
@@ -117,8 +119,48 @@ def pytest_configure(config) -> None:
 
     config.iqa = iqa
 
+    # Register some markers for tests' requirements
+    config.addinivalue_line("markers", "component(name): Test requires <name> / <type> of component to be able to run. "
+                                       "A 'Broker' for example or more specifically 'artemis'.")
+    config.addinivalue_line("markers", "components(name, count): Test requires number <count> of <name> / <type> "
+                                       "components to be able to run. Five or 'broker' type components for example.")
+
     # Clean up temporary files at exit
     atexit.register(cleanup_files)
+
+
+def pytest_collection_modifyitems(config, items) -> None:
+    """
+    Hook which is supposed to skip the tests that can't be run due to missing
+    deployment or component in that deployment
+    :param config:
+    :param items:
+    :return:
+    """
+    skip_marker = mark.skip(reason="Inventory containing items needed by the test is ")
+    iqa = config.iqa  # type: Instance
+    for item in items:
+
+        # filter list of types of components based on 'component' marker(s)
+        required = [marker.args[0] for marker in item.iter_markers(name="component")]
+        # filter and append list of tuples containing types and counts of components based on 'components' marker(s)
+        required.append([(marker.args[0], marker.args[1]) for marker in item.iter_markers(name="components")])
+
+        for rc in required:  # rc - required component
+            # 'component' marker has only name so default number of these components is 1
+            count = 1
+            if isinstance(rc, tuple):
+                rc, count = rc
+
+            available = [
+                component for component in iqa.components if isinstance(component, rc)
+            ]
+
+            # if there is lesser number then required count of some type of component, mark test to be skipped
+            if available < count:
+                item.add_marker(skip_marker)
+            break
+    return
 
 
 def pytest_runtest_call(item: Function) -> None:
