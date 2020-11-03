@@ -24,27 +24,36 @@ setup(
         'tox',
         "codecov",
         "asynctest",
-        "freezegun",
         "mypy",
-        "aiofiles",
+        "aiologger",
         "uvloop",
     ],
 
     install_require=[
-        'asyncssh'
+        'asyncssh',
         'requests',
+        'ansible',
         'PyYAML',
+        'dpath',
+        'CALM',
         'cython',
         'ansible',
         'python-qpid-proton',
-        'amqcfg',
+        'git+git://github.com/rh-messaging-qe/yacfg@master#egg=yacfg',
         'dpath',
         'optconstruct',
         'docker',
+        'docker-compose',
         'urllib3',
+        "flake8",
         'kubernetes'
     ],
     url='https://github.com/enkeys/iqa-one',
     author='Dominik Lenoch',
-    author_email='dlenoch@redhat.com'
+    author_email='dlenoch@redhat.com',
+    entry_points={
+        'pytest11': [
+            'pytest_iqa = pytest_iqa.plugin',
+        ],
+    },
 )
