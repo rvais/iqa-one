@@ -2,7 +2,8 @@
 Provides representation for Commands that can be executed against
 ExecutorBase instances.
 """
-from typing import Optional
+from typing import Optional, Any
+from os import PathLike
 
 
 class CommandBase:
@@ -14,6 +15,7 @@ class CommandBase:
     def __init__(
         self,
         args: list,
+        path_to_exec: Optional[PathLike[Any]] = None,
         stdout: bool = True,
         stderr: bool = True,
         timeout: int = 0,
@@ -36,6 +38,7 @@ class CommandBase:
         """
 
         self._args: list = args
+        self.path_to_exec = path_to_exec if not None else ''
         self.stdout: bool = stdout
         self.stderr: bool = stderr
         self.timeout: int = timeout
