@@ -20,9 +20,10 @@ def get_subclasses(given_name: str, in_class: Any, in_class_property: str = '__n
     Returns: Any
 
     """
-    for cls in in_class.__subclasses__():  # type: Any
-        if getattr(cls, in_class_property) == given_name:
-            return cls  # type: Any
+    if hasattr(in_class, '__subclasses__'):
+        for cls in in_class.__subclasses__():  # type: Any
+            if getattr(cls, in_class_property) == given_name:
+                return cls  # type: Any
 
     raise ValueError('The name "%s" not found as a subclasses of %s' % (given_name, in_class))
 
