@@ -5,7 +5,7 @@ from typing import Optional
 from docker.errors import APIError, NotFound
 
 from iqa.system.executor.docker.executor_docker import ExecutorDocker
-from iqa.system.executor import ExecutionBase
+from iqa.system.executor.execution import ExecutionBase
 from iqa.system.service.service import Service, ServiceStatus
 from iqa.utils.docker_util import get_container
 

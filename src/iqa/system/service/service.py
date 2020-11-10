@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Optional
 
-from iqa.system.executor import ExecutorBase
-from iqa.system.executor import ExecutionBase
+from iqa.system.executor.executor import ExecutorBase
+from iqa.system.executor.execution import ExecutionBase
 
 
 class ServiceStatus(Enum):

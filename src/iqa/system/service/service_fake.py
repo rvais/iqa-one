@@ -1,8 +1,8 @@
 import abc
 from typing import Optional
 
-from iqa.system.executor import ExecutorBase
-from iqa.system.executor import ExecutionBase
+from iqa.system.executor.executor import ExecutorBase
+from iqa.system.executor.execution import ExecutionBase
 from .service import Service, ServiceStatus
 
 

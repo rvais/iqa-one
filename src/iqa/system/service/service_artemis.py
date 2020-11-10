@@ -9,7 +9,9 @@ from typing.re import Pattern
 
 from iqa.system.command.command_ansible import CommandBaseAnsible
 from iqa.system.command.command_base import CommandBase
-from iqa.system.executor import ExecutorBase, ExecutionBase, ExecutorAnsible
+from iqa.system.executor.executor import ExecutorBase
+from iqa.system.executor.execution import ExecutionBase
+from iqa.system.executor.ansible.executor_ansible import ExecutorAnsible
 from iqa.system.service.service import ServiceStatus
 from iqa.system.service.service_fake import ServiceFake
 from iqa.utils.tcp_util import is_tcp_port_available
