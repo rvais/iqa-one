@@ -1,9 +1,8 @@
 from typing import Optional
 from urllib.parse import urlparse, unquote
-
-from iqa.components.clients.external.java.command.java_commands import (
-    JavaConnectorClientCommand,
-)
+from typing import Any
+from os import PathLike
+from iqa.components.clients.external.java.command.java_commands import JavaConnectorClientCommand
 from iqa.system.node.node import Node
 from .client import ClientJava
 
@@ -12,9 +11,11 @@ class ConnectorJava(ClientJava):
     """External Java Qpid JMS connector client."""
 
     _command: JavaConnectorClientCommand
+    path_to_exec: PathLike[Any]
 
-    def __init__(self, name: str, node: Node, **kwargs) -> None:
+    def __init__(self, name: str, node: Node, path_to_exec: PathLike[Any] = None, **kwargs) -> None:
         super(ConnectorJava, self).__init__(name, node, **kwargs)
+        self.path_to_exec = path_to_exec
 
     def _set_url(self, url: str) -> None:
         p_url = urlparse(url)
@@ -54,6 +55,7 @@ class ConnectorJava(ClientJava):
         encoding: str = 'utf-8',
     ) -> JavaConnectorClientCommand:
         return JavaConnectorClientCommand(
+            path_to_exec=self.path_to_exec,
             stdout=stdout,
             stderr=stderr,
             daemon=daemon,

@@ -6,7 +6,8 @@ Options are also common to implementation language (java, python, etc).
 In case an implementation has a different set of options, specialize it
 in a separate module inside abstract.client.command.impl.
 """
-from typing import Optional
+from typing import Optional, Any
+from os import PathLike
 
 from iqa.components.clients.external.command.options.client_options import (
     ClientOptionsBase,
@@ -32,10 +33,20 @@ class ClientCommandBase(CommandBase):
     properties).
     """
 
-    def __init__(self, args) -> None:
-        super().__init__(args)
+    def __init__(
+        self,
+        args: list,
+        path_to_exec: Optional[PathLike[Any]] = None,
+        stdout: bool = True,
+        stderr: bool = True,
+        daemon: bool = False,
+        timeout: int = 0,
+        encoding: str = 'utf-8',
+    ) -> None:
+        super().__init__(args, path_to_exec, stdout, stderr,  timeout, encoding)
         self.control: Optional[ControlOptionsCommon] = None
         self.logging: Optional[LoggingOptionsCommon] = None
+        self.daemon = daemon
 
     @property  # type: ignore
     def args(self) -> list:
@@ -89,14 +100,15 @@ class ConnectorClientCommand(ClientCommandBase):
 
     def __init__(
         self,
+        path_to_exec: PathLike[Any] = None,
         stdout: bool = False,
         stderr: bool = False,
         daemon: bool = False,
         timeout: int = 0,
         encoding: str = 'utf-8',
     ) -> None:
-        super(ClientCommandBase, self).__init__(
-            [], stdout, stderr, daemon, timeout, encoding
+        super(ConnectorClientCommand, self).__init__(
+            [], path_to_exec, stdout, stderr, daemon, timeout, encoding
         )
         self.control: ControlOptionsCommon = ControlOptionsCommon()
         self.logging: LoggingOptionsCommon = LoggingOptionsCommon()
@@ -114,14 +126,15 @@ class ReceiverClientCommand(ClientCommandBase):
 
     def __init__(
         self,
+        path_to_exec: PathLike[Any] = None,
         stdout: bool = False,
         stderr: bool = False,
         daemon: bool = False,
         timeout: int = 0,
         encoding: str = 'utf-8',
     ):
-        super(ClientCommandBase, self).__init__(
-            [], stdout, stderr, daemon, timeout, encoding
+        super(ReceiverClientCommand, self).__init__(
+            [], path_to_exec, stdout, stderr, daemon, timeout, encoding
         )
         self.control: ControlOptionsReceiver = ControlOptionsReceiver()
         self.logging: LoggingOptionsSenderReceiver = LoggingOptionsSenderReceiver()
@@ -140,14 +153,15 @@ class SenderClientCommand(ClientCommandBase):
 
     def __init__(
         self,
+        path_to_exec: PathLike[Any] = None,
         stdout: bool = False,
         stderr: bool = False,
         daemon: bool = False,
         timeout: int = 0,
         encoding: str = 'utf-8',
     ) -> None:
-        super(ClientCommandBase, self).__init__(
-            [], stdout, stderr, daemon, timeout, encoding
+        super(SenderClientCommand, self).__init__(
+            [], path_to_exec, stdout, stderr, daemon, timeout, encoding
         )
         self.control: ControlOptionsSenderReceiver = ControlOptionsSenderReceiver()
         self.logging: LoggingOptionsSenderReceiver = LoggingOptionsSenderReceiver()

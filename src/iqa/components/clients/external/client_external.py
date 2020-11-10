@@ -4,7 +4,7 @@ from iqa.abstract.client.messaging_client import MessagingClient
 from iqa.abstract.listener import Listener
 from iqa.components.abstract.component import Component
 from iqa.components.clients.external.command.client_command import ClientCommandBase
-from iqa.system.executor import ExecutionBase
+from iqa.system.executor.execution import ExecutionBase
 from iqa.system.node.node import Node
 
 

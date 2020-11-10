@@ -1,10 +1,9 @@
 from urllib.parse import urlparse, urlunparse, unquote
-
+from typing import Any
+from os import PathLike
 from iqa.abstract.client.receiver import Receiver
 from iqa.components.clients.external.java.client import ClientJava
-from iqa.components.clients.external.java.command.java_commands import (
-    JavaReceiverClientCommand,
-)
+from iqa.components.clients.external.java.command.java_commands import JavaReceiverClientCommand
 from iqa.system.node.node import Node
 
 
@@ -12,9 +11,11 @@ class ReceiverJava(ClientJava, Receiver):
     """External Java Qpid JMS receiver client."""
 
     _command: JavaReceiverClientCommand
+    path_to_exec: PathLike[Any]
 
-    def __init__(self, name: str, node: Node, **kwargs) -> None:
+    def __init__(self, name: str, node: Node, path_to_exec: PathLike[Any] = None, **kwargs) -> None:
         super(ReceiverJava, self).__init__(name, node, **kwargs)
+        self.path_to_exec = path_to_exec
 
     def _set_url(self, url: str) -> None:
         p_url = urlparse(url)
@@ -64,6 +65,7 @@ class ReceiverJava(ClientJava, Receiver):
         encoding: str = 'utf-8',
     ) -> JavaReceiverClientCommand:
         return JavaReceiverClientCommand(
+            path_to_exec=self.path_to_exec,
             stdout=stdout,
             stderr=stderr,
             daemon=daemon,
