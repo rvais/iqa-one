@@ -7,8 +7,8 @@ import re
 from typing import Union
 
 from iqa.system.command.command_base import CommandBase
-from iqa.system.executor import ExecutorBase
-from iqa.system.executor import ExecutionBase
+from iqa.system.executor.executor import ExecutorBase
+from iqa.system.executor.execution import ExecutionBase
 from iqa.system.node.node import Node
 
 
@@ -24,9 +24,9 @@ class NodeLocal(Node):
         cmd_ping: CommandBase = CommandBase([], stdout=True, timeout=20)
 
         # If unable to determine host address, then do not perform ping
-        if self.get_ip() is None:
+        if self._get_ip() is None:
             return False
-        cmd_ping.args = ['ping', '-c', '1', self.get_ip()]
+        cmd_ping.args = ['ping', '-c', '1', self._get_ip()]
 
         execution: ExecutionBase = self.executor.execute(cmd_ping)
 

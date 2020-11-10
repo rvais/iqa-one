@@ -5,26 +5,24 @@ must provide some basic behaviors, like ping, get_ip and execute command.
 import abc
 import logging
 
-from typing import Optional, TYPE_CHECKING
+from typing import Optional
 
 from iqa.system.command.command_base import CommandBase
-from iqa.system.executor import ExecutionBase
 from iqa.utils.ping import ping
-
-if TYPE_CHECKING:
-    from iqa.utils.types import ExecutorType
+from iqa.system.executor.execution import ExecutionBase
+from iqa.system.executor.executor import ExecutorBase
 
 
 class Node(abc.ABC):
     """Node abstract component"""
 
     def __init__(
-        self, hostname: str, executor: 'ExecutorType', name: str = None, ip: str = ''
+        self, hostname: str, executor: 'ExecutorBase', name: str = None, ip: str = ''
     ) -> None:
-        logging.getLogger().info('Initialization of Node: %s' % self.hostname)
+        logging.getLogger().info('Initialization of Node: %s' % hostname)
         self.hostname: str = hostname
         self.name: str = name if name else hostname
-        self.executor: ExecutorType = executor
+        self.executor: ExecutorBase = executor
         self.ip: Optional[str] = ip
         self.reachable: bool = False
 
@@ -40,7 +38,7 @@ class Node(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def _get_ip(self) -> str:
+    def get_ip(self) -> str:
         pass
 
     def _is_reachable(self) -> bool:

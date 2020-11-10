@@ -64,7 +64,7 @@ class NodeDocker(Node):
 
         raise Exception("Timeout reached while waiting on!")
 
-    def _get_ip(self) -> None:
+    def get_ip(self) -> None:
         """Get host of Docker node"""
         logger.debug('Retrieving %s container\'s host for network: %s' % (self.hostname, self.docker_network))
         try:

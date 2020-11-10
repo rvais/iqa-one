@@ -5,16 +5,17 @@ Ansible Node implementation of Node Interface.
 import logging
 import re
 from typing import Union
+from iqa.system.executor.execution import ExecutionBase
+from iqa.system.executor.ansible import ExecutorAnsible
 
 from iqa.system.command.command_ansible import CommandBaseAnsible
-from iqa.system.executor import ExecutorBase, ExecutionBase
 from iqa.system.node.node import Node
 
 
 class NodeAnsible(Node):
     """Ansible implementation for Node interface."""
 
-    def __init__(self, hostname: str, executor: ExecutorBase, ip: str = None) -> None:
+    def __init__(self, hostname: str, executor: ExecutorAnsible, ip: str = None) -> None:
         super(NodeAnsible, self).__init__(hostname, executor, ip)
         logging.getLogger().info('Initialization of NodeAnsible: %s' % self.hostname)
 
