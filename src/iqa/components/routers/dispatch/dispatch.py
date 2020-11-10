@@ -4,7 +4,7 @@ from iqa.abstract.listener import Listener
 from iqa.abstract.server.router import Router
 from iqa.components.abstract.server.server_component import ServerComponent
 from iqa.system.command.command_base import CommandBase
-from iqa.system.executor import ExecutionBase
+from iqa.system.executor.execution import ExecutionBase
 from iqa.system.node.node import Node
 from iqa.utils.types import ManagementClientSubtype
 from .config import Config

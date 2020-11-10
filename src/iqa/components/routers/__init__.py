@@ -2,7 +2,7 @@ import logging
 from typing import TYPE_CHECKING
 
 from iqa.abstract.server.router import Router
-from iqa.system.executor import ExecutorBase
+from iqa.system.executor.executor import ExecutorBase
 from iqa.system.node.node import Node
 from iqa.system.service.service import Service
 

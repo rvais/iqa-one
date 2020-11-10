@@ -1,5 +1,5 @@
 from iqa.abstract.server.broker import Broker
-from iqa.system.executor import ExecutorBase
+from iqa.system.executor.executor import ExecutorBase
 from iqa.system.node.node import Node
 from iqa.system.service.service import Service
 

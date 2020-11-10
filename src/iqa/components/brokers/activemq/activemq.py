@@ -9,10 +9,6 @@ from iqa.abstract.server.broker import Broker
 from iqa.components.abstract.server.server_component import ServerComponent
 from iqa.components.brokers.artemis.artemis_config import ArtemisConfig
 from iqa.components.brokers.artemis.management.jolokia_client import ArtemisJolokiaClient
-from iqa.components.protocols.amqp import AMQP10
-from iqa.components.protocols.mqtt import MQTT
-from iqa.components.protocols.openwire import Openwire
-from iqa.components.protocols.stomp import STOMP
 
 
 class Activemq(ServerComponent, Broker):
@@ -20,7 +16,7 @@ class Activemq(ServerComponent, Broker):
     Apache ActiveMQ has a proven non blocking architecture. It delivers outstanding performance.
     """
 
-    supported_protocols: list = [AMQP10(), MQTT(), STOMP(), Openwire()]
+    supported_protocols: list = ["AMQP10", "MQTT", "STOMP", "Openwire"]
     name: str = 'Activemq'
     implementation: str = 'activemq'
 
