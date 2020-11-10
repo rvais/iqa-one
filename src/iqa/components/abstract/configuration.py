@@ -9,7 +9,7 @@ import yaml
 
 from iqa.system.command.command_ansible import CommandBaseAnsible
 from iqa.system.command.command_base import CommandBase
-from iqa.system.executor import ExecutionBase
+from iqa.system.executor.execution import ExecutionBase
 from iqa.system.node import NodeAnsible, NodeLocal
 from iqa.system.node.node_docker import NodeDocker
 from iqa.utils.exceptions import IQAConfigurationException
@@ -83,19 +83,21 @@ class Configuration(object):
         :return: List of initialized abstract servers (as objects)
         :rtype: list
         """
-        with open(path, 'r') as f:
-            try:
-                self.yaml_data = yaml.full_load(f)
-            except yaml.YAMLError:
-                raise IQAConfigurationException(
-                    'Unable to load file "%s" for "%s"'
-                    % (path, self.__class__.__name__)
-                )
 
-            if 'artemis' not in self.yaml_data['render']['template']:
-                raise IQAConfigurationException(
-                    'Incompatible data structure for %s !' % self.__class__.__name__
-                )
+        if os.path.exists(path):
+            with open(path, 'r') as f:
+                try:
+                    self.yaml_data = yaml.full_load(f)
+                except yaml.YAMLError:
+                    raise IQAConfigurationException(
+                        'Unable to load file "%s" for "%s"'
+                        % (path, self.__class__.__name__)
+                    )
+
+                if 'artemis' not in self.yaml_data['render']['template']:
+                    raise IQAConfigurationException(
+                        'Incompatible data structure for %s !' % self.__class__.__name__
+                    )
 
     @abc.abstractmethod
     def load_configuration(self) -> None:
