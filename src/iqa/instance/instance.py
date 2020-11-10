@@ -4,18 +4,12 @@ IQA instance which is populated based on an ansible compatible inventory file.
 import logging
 from typing import List, Optional, Union, TYPE_CHECKING
 
-from iqa.abstract.client.client import Client
-from iqa.abstract.server.broker import Broker
-from iqa.abstract.server.router import Router
-from iqa.components.abstract.component import Component
 from iqa.components.brokers import BrokerFactory
 from iqa.components.clients.external import ClientFactory
 from iqa.components.routers import RouterFactory
 from iqa.system.ansible.ansible_inventory import AnsibleInventory
-from iqa.system.executor import create_executor
-from iqa.system.executor import ExecutorBase
+from iqa.system.executor import ExecutorFactory
 from iqa.system.node import NodeFactory
-from iqa.system.node.node import Node
 from iqa.system.service import ServiceFactory
 
 logger = logging.getLogger(__name__)
@@ -31,6 +25,13 @@ if TYPE_CHECKING:
         ReceiverSubtype,
         SenderSubtype,
     )
+else:
+    from iqa.abstract.client.client import Client
+    from iqa.abstract.server.broker import Broker
+    from iqa.abstract.server.router import Router
+    from iqa.components.abstract.component import Component
+    from iqa.system.executor.executor import ExecutorBase
+    from iqa.system.node.node import Node
 
 
 class Instance:
@@ -82,7 +83,7 @@ class Instance:
             cmp_ip: str = cmp_vars.get('ansible_host', None)
 
             # Getting the executor instance
-            executor: 'ExecutorType' = create_executor(
+            executor: 'ExecutorType' = ExecutorFactory.create_executor(
                 exec_impl=cmp_exec, **cmp_vars
             )
 
@@ -137,7 +138,7 @@ class Instance:
     # TODO: @dlenoch re-implement node logic
     def new_node(
         self, hostname: str, executor_impl: str = 'ansible', ip: str = None
-    ) -> Node:
+    ) -> 'NodeType':
         """Create new node under iQA instance
 
         :param executor_impl:
@@ -150,7 +151,7 @@ class Instance:
         :return:
         :rtype:
         """
-        executor: ExecutorBase = create_executor(implementation=executor_impl)
+        executor: ExecutorBase = ExecutorFactory.create_executor(implementation=executor_impl)
 
         # Create the Node for current client
         node: Node = NodeFactory.create_node(
