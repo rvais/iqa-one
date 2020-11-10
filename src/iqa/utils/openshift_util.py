@@ -23,8 +23,8 @@ Utility class to help executing OpenShift standard operations
 import logging
 from typing import Any, Callable
 
-from iqa.system.executor import ExecutorBase
-from iqa.system.executor import ExecutionBase
+from iqa.system.executor.executor import ExecutorBase
+from iqa.system.executor.execution import ExecutionBase
 from iqa.system.command.command_base import CommandBase
 
 
