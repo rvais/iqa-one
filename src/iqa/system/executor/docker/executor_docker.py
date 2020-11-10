@@ -18,7 +18,7 @@ class ExecutorDocker(ExecutorBase):
     """
 
     implementation: str = 'docker'
-    name: str = 'Docker CLI executor',
+    name: str = 'Docker CLI executor'
 
     def __init__(
         self,

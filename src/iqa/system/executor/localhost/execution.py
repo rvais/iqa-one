@@ -4,7 +4,7 @@ from asyncio.subprocess import Process
 from typing import Optional
 
 from iqa.system.command.command_base import CommandBase
-from iqa.system.executor import ExecutionBase
+from iqa.system.executor.execution import ExecutionBase
 
 logger = logging.getLogger(__name__)
 
