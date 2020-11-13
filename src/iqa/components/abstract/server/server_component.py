@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 from iqa.abstract.listener import Listener
 from iqa.components.abstract.component import Component
 from iqa.components.abstract.configuration import Configuration
@@ -17,16 +15,16 @@ class ServerComponent(Component):
         self,
         name: str,
         node: Node,
-        listeners: Optional[List[Listener]],
-        configuration: Configuration = None,
+        listeners: list or None,
+        configuration: Configuration or None = None,
         **kwargs
     ) -> None:
         super(ServerComponent, self).__init__(name, node)
         self.service: Service = kwargs.get('service')  # type: ignore
         self.name: str = name
         self.node: Node = node
-        self.configuration: Optional[Configuration] = configuration
-        self.listeners: Optional[List[Listener]] = listeners
+        self.configuration: Configuration or None = configuration
+        self.listeners: list or None = listeners
         self.management_client: ManagementClient = self.get_management_client()
 
     def get_management_client(self) -> ManagementClient:
