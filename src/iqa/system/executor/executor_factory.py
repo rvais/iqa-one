@@ -1,21 +1,24 @@
 import logging
-from typing import Any
 
-from iqa.system.executor.ansible import *
-from iqa.system.executor.asyncssh import *
-from iqa.system.executor.docker import *
-from iqa.system.executor.kubernetes import *
-from iqa.system.executor.localhost_old import *
-from iqa.system.executor.ssh import *
-from iqa.utils.types import ExecutorType
-from iqa.utils.utils import get_subclasses
+from iqa.utils.walk_package import walk_package_and_import
+from iqa.system.executor.base.executor import ExecutorBase
+from iqa.utils.utils import get_subclass_with_prop_value
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import List, Type
 
 
 class ExecutorFactory(object):
     logger = logging.getLogger(__name__)
+    __known_implementations: List[Type[ExecutorBase]] = walk_package_and_import(__path__, ExecutorBase)
 
     @staticmethod
-    def create_executor(implementation: str, **kwargs) -> ExecutorType:
+    def get_known_implementations() -> List[Type[ExecutorBase]]:
+        return ExecutorFactory.__known_implementations.copy()
+
+    @staticmethod
+    def create_executor(implementation: str, **kwargs) -> ExecutorBase:
         """
             Loops through all implementations of the Executor class
             and returns an instance of the executor initialized from kwargs.
@@ -27,11 +30,11 @@ class ExecutorFactory(object):
             Returns:
     """
         try:
-            exc: Any = get_subclasses(
-                given_name=implementation,
-                in_class=ExecutorType,
-                in_class_property='implementation'
+            executor = get_subclass_with_prop_value(
+                superclass=ExecutorBase,
+                cls_property_val='implementation',
+                in_class_property=implementation
             )
-            return exc(**kwargs)
+            return executor(**kwargs)
         except ValueError:
             ExecutorFactory.logger.error('Implementation of "%s" executor was not found!' % implementation)
