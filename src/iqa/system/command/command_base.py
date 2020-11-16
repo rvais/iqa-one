@@ -2,8 +2,14 @@
 Provides representation for Commands that can be executed against
 ExecutorBase instances.
 """
-from typing import Optional, Any
-from os import PathLike
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Optional, List, Callable, Any
+    from os import PathLike
+    from iqa.system.executor.base.execution import ExecutionBase
+    from iqa.system.executor.base.executor import ExecutorBase
 
 
 class CommandBase:
@@ -13,20 +19,22 @@ class CommandBase:
     """
 
     def __init__(
-        self,
-        args: list,
-        path_to_exec: Optional[PathLike[Any]] = None,
-        stdout: bool = True,
-        stderr: bool = True,
-        timeout: int = 0,
-        encoding: str = 'utf-8',
-        wait_for: bool = False,
-        env: Optional[dict] = None
+            self,
+            args: List[str],
+            path_to_exec: Optional[PathLike[Any]] = None,
+            stdout: bool = True,
+            stderr: bool = True,
+            timeout: int = 0,
+            encoding: str = 'utf-8',
+            wait_for: bool = False,
+            env: Optional[dict] = None
     ) -> None:
         """
         Creates an instance of a Command representation that can be passed to
         an ExecutorBase instance.
         :param args: List of arguments that compose the command to be executed
+        :param path_to_exec: Path to executable represented by this command,
+        if applicable.
         :param stdout: If True stdout will be available at the
         resulting Execution instance.
         :param stderr: If True stderr will be available at the
@@ -37,8 +45,8 @@ class CommandBase:
         :param encoding: Encoding when reading stdout and stderr.
         """
 
-        self._args: list = args
-        self.path_to_exec = path_to_exec if not None else ''
+        self._args: List[str] = args
+        self._path_to_exec: Optional[PathLike[Any]] = path_to_exec
         self.stdout: bool = stdout
         self.stderr: bool = stderr
         self.timeout: int = timeout
@@ -49,23 +57,31 @@ class CommandBase:
             env = {}
         self.env: dict = env
 
-        self._timeout_callbacks: list = []
-        self._interrupt_callbacks: list = []
-        self._pre_exec_hooks: list = []
-        self._post_exec_hooks: list = []
+        self._timeout_callbacks: List[Callable[[ExecutionBase], Any]] = []
+        self._interrupt_callbacks: List[Callable[[ExecutionBase], Any]] = []
+        self._pre_exec_hooks: List[Callable[[CommandBase, ExecutorBase], Any]] = []
+        self._post_exec_hooks: List[Callable[[ExecutionBase], Any]] = []
 
     @property
-    def args(self) -> list:
+    def args(self) -> List[str]:
         return self._args
 
     @args.setter
-    def args(self, args):
+    def args(self, args: List[str]) -> None:
         self._args = args
+
+    @property
+    def path_to_exec(self) -> PathLike[Any]:
+        return self._path_to_exec
+
+    @path_to_exec.setter
+    def path_to_exec(self, path_to_exec: PathLike[Any]) -> None:
+        self._path_to_exec = path_to_exec
 
     def __str__(self):
         return " ".join(self.args)
 
-    def add_timeout_callback(self, callback_method) -> None:
+    def add_timeout_callback(self, callback_method: Callable) -> None:
         """
         Adds a callback method to a list of methods that will
         be called in case this execution times out.
@@ -76,7 +92,7 @@ class CommandBase:
         """
         self._timeout_callbacks.append(callback_method)
 
-    def add_interrupt_callback(self, callback_method) -> None:
+    def add_interrupt_callback(self, callback_method: Callable) -> None:
         """
         Adds a callback method to a list of methods that will
         be called in case this execution is interrupted.
@@ -87,7 +103,7 @@ class CommandBase:
         """
         self._interrupt_callbacks.append(callback_method)
 
-    def add_pre_exec_hook(self, pre_exec_hook_method) -> None:
+    def add_pre_exec_hook(self, pre_exec_hook_method: Callable) -> None:
         """
         Adds a callback method to a list of methods that will
         be called before Executor starts the process.
@@ -98,7 +114,7 @@ class CommandBase:
         """
         self._pre_exec_hooks.append(pre_exec_hook_method)
 
-    def add_post_exec_hook(self, post_exec_hook_method) -> None:
+    def add_post_exec_hook(self, post_exec_hook_method: Callable) -> None:
         """
         Adds a callback method to a list of methods that will
         be called after Execution instance is started by
@@ -110,7 +126,7 @@ class CommandBase:
         """
         self._post_exec_hooks.append(post_exec_hook_method)
 
-    def on_timeout(self, execution) -> None:
+    def on_timeout(self, execution: ExecutionBase) -> None:
         """
         Called by the Execution in case it times out. This method
         will call all registered timeout callbacks.
@@ -120,7 +136,7 @@ class CommandBase:
         for timeout_callback in self._timeout_callbacks:
             timeout_callback(execution)
 
-    def on_interrupt(self, execution) -> None:
+    def on_interrupt(self, execution: ExecutionBase) -> None:
         """
         Called by the Execution instance in case it gets interrupted.
         Once interrupted, this method will call all registered
@@ -131,7 +147,7 @@ class CommandBase:
         for interrupt_callback in self._interrupt_callbacks:
             interrupt_callback(execution)
 
-    def on_pre_execution(self, executor) -> None:
+    def on_pre_execution(self, executor: ExecutorBase) -> None:
         """
         This is called internally by the Executor when the execute()
         method is invoked, prior to creating the Execution instance.
@@ -142,7 +158,7 @@ class CommandBase:
         for pre_exec_hook in self._pre_exec_hooks:
             pre_exec_hook(self, executor)
 
-    def on_post_execution(self, execution) -> None:
+    def on_post_execution(self, execution: ExecutionBase) -> None:
         """
         This is called internally by the Executor after Execution
         instance is created (and started), causing all registered
