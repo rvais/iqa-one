@@ -1,18 +1,19 @@
-import logging
-
-import iqa.logger
-from abc import ABC, abstractmethod
-
-from iqa.system.command.command_base import CommandBase
-from iqa.utils.timeout import TimeoutCallback
-
-logger = iqa.logger.logger
-
-
 """
 Defines the representation of a command Execution that is generated
 by the Executor implementations when a command is executed.
 """
+import logging
+from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING
+
+import iqa.logger
+from iqa.utils.timeout import TimeoutCallback
+
+if TYPE_CHECKING:
+    from typing import Optional, List
+    from iqa.system.command.command_base import CommandBase
+
+logger = iqa.logger.logger
 
 
 class ExecutionException(Exception):
@@ -28,9 +29,14 @@ class ExecutionBase(ABC):
     who generated the Execution instance.
     """
 
-    def __init__(self, command: CommandBase, modified_args: list = None, env=None) -> None:
+    def __init__(
+            self,
+            command: CommandBase,
+            modified_args: Optional[List[str]] = None,
+            env: Optional[dict] = None
+    ) -> None:
         """
-        Instance is initialized with the command that was effectively
+        Instance is initialized with command that was effectively
         executed and the Executor instance that produced this new object.
         :param command:
         :param modified_args:
@@ -39,20 +45,23 @@ class ExecutionBase(ABC):
         self.command: CommandBase = command
         self.stdout = None
         self.stderr = None
+
+        if env is None:
+            env = {}
         self.env: dict = env
 
-        # Flags to control whether execution timed out or was interrupted by user
+        # Flags to control whether execution has timed out or it has been interrupted by user
         self.timed_out: bool = False
         self.interrupted: bool = False
         self.failure: bool = False
 
         # Adjust time out settings if provided
-        self._timeout: TimeoutCallback or None = None
+        self._timeout: Optional[TimeoutCallback] = None
         if command.timeout and command.timeout > 0:
             self._timeout = TimeoutCallback(command.timeout, self._on_timeout)
 
-        # Avoids executors from modifying the command
-        self.args: list = self.command.args
+        # Avoid unwanted modification of the command's arguments by executors
+        self.args: List[str] = self.command.args
         if modified_args:
             self.args = modified_args
 
