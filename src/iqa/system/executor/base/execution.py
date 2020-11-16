@@ -2,7 +2,6 @@ import logging
 
 import iqa.logger
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from iqa.system.command.command_base import CommandBase
 from iqa.utils.timeout import TimeoutCallback
@@ -38,8 +37,8 @@ class ExecutionBase(ABC):
         :param env:
         """
         self.command: CommandBase = command
-        self.stdout: Optional = None
-        self.stderr: Optional = None
+        self.stdout = None
+        self.stderr = None
         self.env: dict = env
 
         # Flags to control whether execution timed out or was interrupted by user
@@ -48,7 +47,7 @@ class ExecutionBase(ABC):
         self.failure: bool = False
 
         # Adjust time out settings if provided
-        self._timeout: Optional[TimeoutCallback] = None
+        self._timeout: TimeoutCallback or None = None
         if command.timeout and command.timeout > 0:
             self._timeout = TimeoutCallback(command.timeout, self._on_timeout)
 
