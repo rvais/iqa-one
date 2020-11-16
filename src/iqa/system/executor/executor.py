@@ -1,9 +1,12 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import List
 
-from iqa.system.command.command_base import CommandBase
-from iqa.system.executor.execution import ExecutionBase
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import List
+    from iqa.system.executor.base.execution import ExecutionBase
+    from iqa.system.command.command_base import CommandBase
 
 from iqa.logger import logger
 
@@ -14,7 +17,8 @@ class ExecutorBase(ABC):
     running a given Command instance similarly across different
     implementations.
     """
-    name: str = NotImplementedError
+    implementation: str = NotImplementedError
+    name: str = 'Abstract Executor class'
 
     def __init__(self, **kwargs) -> None:
         self._logger: logging.Logger = logger
@@ -31,7 +35,7 @@ class ExecutorBase(ABC):
         :return:
         """
 
-        # # Call pre-execution hooks
+        # Call pre-execution hooks
         # await command.on_pre_execution(self)
 
         # Delegate execution to concrete Executor
@@ -40,11 +44,7 @@ class ExecutorBase(ABC):
         )
         execution: ExecutionBase = await self._execute(command)
 
-        # # If command is a not a daemon, wait for it
-        # if command.wait_for:
-        #     await execution.wait()
-
-        # # Processing post-execution hooks
+        # Processing post-execution hooks
         # await command.on_post_execution(execution)
 
         # returning execution
