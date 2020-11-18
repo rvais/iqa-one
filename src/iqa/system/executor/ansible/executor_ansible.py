@@ -1,7 +1,12 @@
+from typing import TYPE_CHECKING
+
 from iqa.system.command.command_ansible import CommandBaseAnsible
-from iqa.system.command.command_base import CommandBase
-from iqa.system.executor.executor import ExecutorBase
-from iqa.system.executor.localhost_old.execution_local import ExecutionProcess
+from iqa.system.executor.base.executor import ExecutorBase
+from iqa.system.executor.localhost.execution_local import ExecutionProcess
+
+if TYPE_CHECKING:
+    from typing import Optional
+    from iqa.system.command.command_base import CommandBase
 """
 Executor implementation that uses the "ansible" CLI to
 run the given Command instance on the target host.
@@ -14,12 +19,13 @@ class ExecutorAnsible(ExecutorBase):
     """
 
     implementation = 'ansible'
+    name: str = 'Ansible executor class'
 
     def __init__(
         self,
-        ansible_host: str = None,
-        inventory: str = None,
-        ansible_user: str = None,
+        ansible_host: Optional[str] = None,
+        inventory: Optional[str] = None,
+        ansible_user: Optional[str] = None,
         module: str = 'raw',
         name: str = 'ExecutorAnsible',
         **kwargs
@@ -78,4 +84,4 @@ class ExecutorAnsible(ExecutorBase):
         ansible_args.append(self.ansible_host)
 
         # Set new args
-        return ExecutionProcess(command, self, modified_args=ansible_args)
+        return ExecutionProcess(command, executor=self, modified_args=ansible_args)
