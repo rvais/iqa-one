@@ -1,7 +1,12 @@
 import os
 
-from iqa.system.executor.localhost_old.execution_local import ExecutionProcess
-from iqa.system.executor.executor import ExecutorBase
+from iqa.system.executor.base.executor import ExecutorBase
+from iqa.system.executor.localhost.execution_local import ExecutionProcess
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Optional
+    from iqa.system.command.command_base import CommandBase
 
 """
 Runs a command using SSH CLI.
@@ -17,13 +22,14 @@ class ExecutorSshOld(ExecutorBase):
     """
 
     implementation = 'ssh'
+    name: str = 'Executor class for SSH remote execution'
 
     def __init__(
         self,
         hostname: str,
         port: str = '22',
         user: str = 'root',
-        ssl_private_key: str = None,
+        ssl_private_key: Optional[str] = None,
         name: str = 'ExecutorSsh',
         **kwargs
     ) -> None:
@@ -32,11 +38,11 @@ class ExecutorSshOld(ExecutorBase):
         self.port: str = kwargs.get('executor_port', port)
         self.user: str = kwargs.get('executor_user', user)
         self.name: str = kwargs.get('executor_name', name)
-        self.ssl_private_key: str = kwargs.get(
+        self.ssl_private_key: Optional[str] = kwargs.get(
             'executor_ssl_private_key', ssl_private_key
         )
 
-    def _execute(self, command) -> ExecutionProcess:
+    def _execute(self, command: CommandBase) -> ExecutionProcess:
         ssh_args: list = ['ssh', '-p', '%s' % self.port]
 
         # If an SSL private key given, use it
@@ -50,4 +56,4 @@ class ExecutorSshOld(ExecutorBase):
 
         ssh_args += ['%s@%s' % (self.user, self.hostname)]
 
-        return ExecutionProcess(command, self, modified_args=ssh_args + command.args)
+        return ExecutionProcess(command, executor=self, modified_args=ssh_args + command.args)
