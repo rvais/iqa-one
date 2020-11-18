@@ -3,6 +3,7 @@ Defines the representation of a command Execution that is generated
 by the Executor implementations when a command is executed.
 """
 import logging
+import subprocess
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
@@ -10,8 +11,9 @@ import iqa.logger
 from iqa.utils.timeout import TimeoutCallback
 
 if TYPE_CHECKING:
-    from typing import Optional, List
+    from typing import Optional, Union, List, IO
     from iqa.system.command.command_base import CommandBase
+    from iqa.system.executor.base.executor import ExecutorBase
 
 logger = iqa.logger.logger
 
@@ -32,6 +34,7 @@ class ExecutionBase(ABC):
     def __init__(
             self,
             command: CommandBase,
+            executor: Optional[ExecutorBase] = None,
             modified_args: Optional[List[str]] = None,
             env: Optional[dict] = None
     ) -> None:
@@ -39,12 +42,20 @@ class ExecutionBase(ABC):
         Instance is initialized with command that was effectively
         executed and the Executor instance that produced this new object.
         :param command:
+        :param executor:
         :param modified_args:
         :param env:
         """
         self.command: CommandBase = command
-        self.stdout = None
-        self.stderr = None
+        self.executor: Optional[ExecutorBase] = executor
+
+        # Prepare stdout and stderr default file descriptors
+        self._fd_stdout: int = subprocess.DEVNULL
+        self._fd_stderr: int = subprocess.DEVNULL
+
+        # Prepare file handles and update file descriptors if applicable
+        self._stdout: Optional[IO] = None
+        self._stderr: Optional[IO] = None
 
         if env is None:
             env = {}
@@ -68,6 +79,14 @@ class ExecutionBase(ABC):
         self._logger: logging.Logger = logger
 
         self._logger.debug('Executing: %s' % self.args)
+
+    @property
+    def fd_stdout(self) -> int:
+        return self._fd_stdout
+
+    @property
+    def fd_stderr(self) -> int:
+        return self._fd_stderr
 
     @abstractmethod
     async def _run(self) -> None:
@@ -149,3 +168,59 @@ class ExecutionBase(ABC):
         """
         if self._timeout is not None:
             self._timeout.interrupt()
+
+    # TODO(rvais): reimplement read operations using yield if appropriate
+    def read_stdout(self, lines: bool = False, closefd: bool = True) -> Optional[Union[str, List[str]]]:
+        """
+        Returns a string with the whole STDOUT content if the original
+        command has stdout property defined as True. Otherwise
+        None will be returned.
+        :param lines: whether to return stdout as a list of lines
+        :type lines: bool
+        :param closefd: closefd parameter to pass to underlying open()
+        :type closefd: bool
+        :return: Stdout content as str if lines is False, or as a list
+        """
+        if self._stdout is None and self.fd_stdout != subprocess.DEVNULL:
+            return None
+
+        if self._stdout is None:
+            self._stdout = open(self.fd_stdout, "r", encoding=self.command.encoding, closefd=closefd)
+
+        self._stdout.seek(0)
+
+        if lines:
+            return self._stdout.readlines()
+
+        return self._stdout.read()
+
+    def read_stderr(self, lines: bool = False, closefd: bool = True) -> Optional[Union[str, List[str]]]:
+        """
+        Returns a string with the whole STDERR content if the original
+        command has stderr property defined as True. Otherwise
+        None will be returned.
+        :param lines: whether to return stdout as a list of lines
+        :type lines: bool
+        :param closefd: closefd parameter to pass to underlying open()
+        :type closefd: bool
+        :return: Stdout content as str if lines is False, or as a list
+        """
+        if self._stderr is None and self._fd_stderr != subprocess.DEVNULL:
+            return None
+
+        if self._stderr is None:
+            self._stderr = open(self.fd_stderr, "r", encoding=self.command.encoding, closefd=closefd)
+
+        self._stderr.seek(0)
+
+        if lines:
+            return self._stderr.readlines()
+
+        return self._stderr.read()
+
+    def close_io(self):
+        if self._stdout is not None:
+            self._stdout.close()
+
+        if self._stderr is not None:
+            self._stderr.close()

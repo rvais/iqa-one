@@ -1,13 +1,17 @@
 import asyncio
 import logging
 from asyncio.subprocess import Process
-from typing import Optional
 
 from iqa.system.command.command_base import CommandBase
-from iqa.system.executor.execution import ExecutionBase
+from iqa.system.executor.base.execution import ExecutionBase
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Optional, List
+    from iqa.system.executor.base.executor import ExecutorBase
 
 logger = logging.getLogger(__name__)
-
 
 """
 Defines the representation of a command Execution that is generated
@@ -22,16 +26,23 @@ class ExecutionAsyncio(ExecutionBase):
     who generated the Execution instance.
     """
 
-    def __init__(self, command: CommandBase, modified_args: list = None, env=None) -> None:
+    def __init__(
+            self,
+            command: CommandBase,
+            executor: Optional[ExecutorBase] = None,
+            modified_args: Optional[List[str]] = None,
+            env: Optional[dict] = None
+    ) -> None:
         """
-        Instance is initialized with the command that was effectively
+        Instance is initialized with a command that was effectively
         executed and the Executor instance that produced this new object.
         :param command:
+        :param executor:
         :param modified_args:
         :param env:
         """
-        super().__init__(command, modified_args, env)
-        self._proc: Optional[Process] = None
+        super(ExecutionAsyncio).__init__(command, executor=executor, modified_args=modified_args, env=env)
+        self._proc: Process or None = None
 
     async def __aenter__(self):
         await self.run()
@@ -49,15 +60,16 @@ class ExecutionAsyncio(ExecutionBase):
         :return:
         """
 
-        _stdout = asyncio.subprocess.PIPE if self.command.stdout else None
-        _stderr = asyncio.subprocess.PIPE if self.command.stderr else None
+        self._fd_stdout = asyncio.subprocess.PIPE if self.command.stdout else None
+        self._fd_stderr = asyncio.subprocess.PIPE if self.command.stderr else None
 
         self._proc = await asyncio.create_subprocess_shell(
             str(self.command),
             env=self.env,
             stdin=asyncio.subprocess.PIPE,
-            stdout=_stdout,
-            stderr=_stderr)
+            stdout=self._stdout,
+            stderr=self._stderr
+        )
 
         self.stdout, self.stderr = await self._proc.communicate()
 
