@@ -1,7 +1,11 @@
 import sys
-from typing import Optional
+from typing import TYPE_CHECKING
 
-from asyncssh import SSHClientSession, EXTENDED_DATA_STDERR, SSHWriter, SSHReader
+if TYPE_CHECKING:
+    from typing import Optional
+    from asyncssh import EXTENDED_DATA_STDERR, SSHWriter, SSHReader
+
+from asyncssh import SSHClientSession
 
 MAX_BUFFER = 65535
 
