@@ -11,6 +11,9 @@ if TYPE_CHECKING:
 class ExecutorAsyncSsh(ExecutorBase):
     """ Executor implementation for AsyncSSH client
     """
+    implementation: str = "asyncssh"
+    name: str = 'Executor class for asynchronous SSH execution'
+
     def __init__(self, host: str, port: int = 22, user: str = 'root', password: Optional[str] = None, **kwargs) -> None:
 
         super(ExecutorAsyncSsh).__init__(**kwargs)
