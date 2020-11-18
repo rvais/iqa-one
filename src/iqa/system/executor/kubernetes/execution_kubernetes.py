@@ -2,7 +2,6 @@ import logging
 import os
 import tempfile
 import threading
-from typing import IO
 
 import urllib3
 from kubernetes import config, client
@@ -11,10 +10,13 @@ from kubernetes.client.apis import core_v1_api
 from kubernetes.stream import stream
 from kubernetes.stream.ws_client import WSClient
 
+from typing import TYPE_CHECKING
 
-from iqa.system.command.command_base import CommandBase
-from iqa.system.executor import ExecutionException
-from iqa.system.executor import Execution
+if TYPE_CHECKING:
+    from typing import Optional, List, Union
+    from iqa.system.command.command_base import CommandBase
+
+from iqa.system.executor.base.execution import ExecutionBase, ExecutionException
 from iqa.system.executor.kubernetes.executor_kubernetes import ExecutorKubernetes
 
 # Logger for ExecutionKubernetes
@@ -22,7 +24,7 @@ logger: logging.Logger = logging.getLogger(__name__)
 urllib3.disable_warnings()
 
 
-class ExecutionKubernetes(Execution):
+class ExecutionKubernetes(ExecutionBase):
     """
     Represents the Execution of a command that is performed through the Kubernetes Client API (No local PID generated).
     Executors that want to run a given command through the Kubernetes Client API must use this Execution strategy.
@@ -32,11 +34,11 @@ class ExecutionKubernetes(Execution):
         self,
         command: CommandBase,
         executor: ExecutorKubernetes,
-        modified_args: list = None,
-        env=None,
+        modified_args: Optional[List[str]] = None,
+        env: Optional[dict] = None,
     ) -> None:
         """
-        Instance is initialized with the command that was effectively
+        Instance is initialized with a command that was effectively
         executed and the Executor instance that produced this new object.
         The KubernetesExecution expects that executor is an ExecutorKubernetes.
         :param command:
@@ -44,25 +46,30 @@ class ExecutionKubernetes(Execution):
         :param modified_args:
         :param env:
         """
-        self.fh_stdout: IO
-        self.fh_stderr: IO
-
-        self.executor: ExecutorKubernetes = executor
-
-        if command.stdout:
-            self.fh_stdout = tempfile.TemporaryFile(
-                mode='w+t', encoding=command.encoding
-            )
-        if command.stderr:
-            self.fh_stderr = tempfile.TemporaryFile(
-                mode='w+t', encoding=command.encoding
-            )
-
         # Set the config and get Api instance
         client_config: Configuration = client.Configuration()
         client_config.verify_ssl = False
         client_config.assert_hostname = False
         client_config.host = executor.host
+
+        # Initializes the super class which will invoke the run method
+        super(ExecutionKubernetes, self).__init__(
+            command=command, executor=executor, modified_args=modified_args, env=env
+        )
+
+        self.executor: ExecutorKubernetes  # necessary type casting
+
+        if command.stdout:
+            self._stdout = tempfile.TemporaryFile(
+                mode='w+t', encoding=command.encoding
+            )
+            self._fd_stdout = self._stdout.fileno()
+
+        if command.stderr:
+            self._stderr = tempfile.TemporaryFile(
+                mode='w+t', encoding=command.encoding
+            )
+            self._fd_stderr = self._stderr.fileno()
 
         # If a token has been provided use it
         if executor.token:
@@ -82,11 +89,6 @@ class ExecutionKubernetes(Execution):
         # Kubernetes response (internal execution)
         self.response: WSClient
 
-        # Initializes the super class which will invoke the run method
-        super(ExecutionKubernetes, self).__init__(
-            command=command, executor=executor, modified_args=modified_args, env=env
-        )
-
     def _run(self) -> None:
         """
         Run a separate thread to perform the command, so the thread can monitor
@@ -105,6 +107,8 @@ class ExecutionKubernetes(Execution):
         the process is considered as done and if a TimeoutCallback has been set, then it will be canceled.
         :return:
         """
+        self.executor: ExecutorKubernetes  # necessary type casting
+
         try:
             logger.debug('Retrieving PODs')
             pods = self.api.list_namespaced_pod(
@@ -194,27 +198,29 @@ class ExecutionKubernetes(Execution):
         if self.response and self.response.is_open():
             self.response.close()
 
-    def read_stdout(self, lines: bool = False):
+    def read_stdout(self, lines: bool = False, closefd: bool = True) -> Optional[Union[str, List[str]]]:
         """
         Reads data from WSClient stdout channel and append it to internal temporary file.
         Then it returns all data collected from stdout.
         If lines is true, then an array will be generated.
         :param lines:
+        :param closefd: closefd does nothing in this implementation
+        :type closefd: bool
         :return:
         """
-        if not self.fh_stdout:
+        if self._stdout is None:
             return None
 
         # Set offset to end of file
-        self.fh_stdout.seek(0, os.SEEK_END)
+        self._stdout.seek(0, os.SEEK_END)
 
         # If new info read from stdout, append it
         if self.response.peek_stdout():
-            self.fh_stdout.write(self.response.read_stdout())
+            self._stdout.write(self.response.read_stdout())
 
-        return self._read_temp_file(self.fh_stdout, lines)
+        return self._read_temp_file(self._stdout, lines)
 
-    def read_stderr(self, lines: bool = False):
+    def read_stderr(self, lines: bool = False, closefd: bool = True) -> Optional[Union[str, List[str]]]:
         """
         Reads data from WSClient stderr channel and append it to internal temporary file.
         Then it returns all data collected from stderr.
@@ -222,18 +228,18 @@ class ExecutionKubernetes(Execution):
         :param lines:
         :return:
         """
-        if not self.fh_stderr:
+        if self._stderr is None:
             return None
 
         # Set offset to end of file
-        self.fh_stderr.seek(0, os.SEEK_END)
+        self._stderr.seek(0, os.SEEK_END)
 
         # If new info read from stderr, append it
         if self.response.peek_stderr():
-            self.fh_stderr.write(self.response.read_stderr())
+            self._stderr.write(self.response.read_stderr())
             self.response.update(timeout=1)
 
-        return self._read_temp_file(self.fh_stderr, lines)
+        return self._read_temp_file(self._stderr, lines)
 
     @staticmethod
     def _read_temp_file(fh, lines):

@@ -1,7 +1,11 @@
 import os
 
-from iqa.system.command.command_base import CommandBase
-from iqa.system.executor import ExecutorBase
+from iqa.system.executor.base.executor import ExecutorBase
+from iqa.system.executor.kubernetes.execution_kubernetes import ExecutionKubernetes
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from iqa.system.command.command_base import CommandBase
 
 
 class ExecutorKubernetes(ExecutorBase):
@@ -9,6 +13,8 @@ class ExecutorKubernetes(ExecutorBase):
     Executor that can be used to run Commands in a Pod running on a Kubernetes cluster.
     This Executor uses the ExecutionKubernetes to run commands through the Kubernetes Client API.
     """
+    implementation: str = "kubernetes"
+    name: str = 'Kubernetes executor class'
 
     def __init__(self, **kwargs) -> None:
         """
@@ -66,6 +72,4 @@ class ExecutorKubernetes(ExecutorBase):
         return 'kubernetes'
 
     def _execute(self, command: CommandBase):
-        from iqa.system.executor.kubernetes.execution_kubernetes import ExecutionKubernetes
-
         return ExecutionKubernetes(command, self)
