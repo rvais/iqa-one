@@ -1,20 +1,23 @@
-from typing import Optional
-
 from .connection import ConnectionAsyncSsh
-from iqa.system.executor.executor import ExecutorBase
-from iqa.system.command import CommandBase
+from iqa.system.executor.base.executor import ExecutorBase
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Optional
+    from iqa.system.command.command_base import CommandBase
 
 
 class ExecutorAsyncSsh(ExecutorBase):
     """ Executor implementation for AsyncSSH client
     """
-    def __init__(self, host: str, port: int = 22, user: str = 'root', password: str = None, **kwargs) -> None:
+    def __init__(self, host: str, port: int = 22, user: str = 'root', password: Optional[str] = None, **kwargs) -> None:
 
-        super().__init__(**kwargs)
-        self._host = host
-        self._port = port
-        self._user = user
-        self._password = password
+        super(ExecutorAsyncSsh).__init__(**kwargs)
+        self._host: str = host
+        self._port: int = port
+        self._user: str = user
+        self._password: Optional[str] = password
         self.connection: Optional[ConnectionAsyncSsh] = None
 
     async def __aenter__(self):
