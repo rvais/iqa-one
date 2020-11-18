@@ -1,5 +1,4 @@
 import logging
-from typing import Optional, List
 
 import asyncssh
 from asyncssh import SSHClientConnection, EXTENDED_DATA_STDERR
@@ -8,6 +7,11 @@ from asyncssh.stream import SSHClientStreamSession, SSHWriter, SSHReader
 from iqa.abstract.connection import ConnectionBase
 from iqa.system.executor.asyncssh.session import AsyncSSHSession
 from iqa.utils.exceptions import IQAHostDisconnectException
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Optional, List, Coroutine
 
 
 class ConnectionAsyncSsh(ConnectionBase):
@@ -47,7 +51,7 @@ class ConnectionAsyncSsh(ConnectionBase):
 
         return session
 
-    async def run(self, command: str):
+    async def run(self, command: str) -> Coroutine:
         self._logger.info('Host {}: Running command "{}"'.format(self._host, command))
         result = await self._conn.run(command, check=True)
         self._logger.info('Host {}: command result"{}"'.format(self._host, result.stdout))
