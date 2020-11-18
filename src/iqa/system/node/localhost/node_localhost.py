@@ -4,29 +4,45 @@ Basic concrete implementation of Node interface.
 
 import logging
 import re
-from typing import Union
+from typing import TYPE_CHECKING
 
-from iqa.system.command.command_base import CommandBase
-from iqa.system.executor.executor import ExecutorBase
-from iqa.system.executor.execution import ExecutionBase
-from iqa.system.node.node import Node
+from iqa.system.executor.executor_factory import ExecutorFactory
+from iqa.system.node.base.node import Node
+
+if TYPE_CHECKING:
+    from typing import Optional, Union
+    from iqa.system.command.command_base import CommandBase
+    from iqa.system.executor.base.executor import ExecutorBase
+    from iqa.system.executor.base.execution import ExecutionBase
+    from iqa.system.executor.localhost.executor_local import ExecutorLocal
+    from iqa.system.executor.asynclocalhost.executor import ExecutorAsyncio
 
 
 class NodeLocal(Node):
     """Node component."""
 
-    def __init__(self, hostname: str, executor: ExecutorBase, ip: str = None) -> None:
-        super(NodeLocal, self).__init__(hostname, executor, ip)
+    implementation: str = "local"
+
+    def __init__(
+        self,
+        hostname: str,
+        ip: Optional[str] = None,
+        executor: Optional[Union[ExecutorBase, ExecutorLocal, ExecutorAsyncio]] = None,
+        name: Optional[str] = "localhost"
+    ) -> None:
         logging.getLogger().info('Initialization of NodeLocal: %s' % self.hostname)
+        if executor is None:
+            executor = ExecutorFactory.create_executor(self.implementation)
+        super(NodeLocal, self).__init__(hostname, executor, ip=ip, name=name)
 
     def ping(self) -> bool:
         """Send ping to node"""
         cmd_ping: CommandBase = CommandBase([], stdout=True, timeout=20)
 
         # If unable to determine host address, then do not perform ping
-        if self._get_ip() is None:
+        if self.get_ip() is None:
             return False
-        cmd_ping.args = ['ping', '-c', '1', self._get_ip()]
+        cmd_ping.args = ['ping', '-c', '1', self.get_ip()]
 
         execution: ExecutionBase = self.executor.execute(cmd_ping)
 

@@ -4,20 +4,35 @@ Ansible Node implementation of Node Interface.
 
 import logging
 import re
-from typing import Union
-from iqa.system.executor.execution import ExecutionBase
-from iqa.system.executor.ansible import ExecutorAnsible
 
 from iqa.system.command.command_ansible import CommandBaseAnsible
-from iqa.system.node.node import Node
+from iqa.system.node.base.node import Node
+from iqa.system.executor.executor_factory import ExecutorFactory
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Optional, List, Type, Union
+    from iqa.system.executor.ansible.executor_ansible import ExecutorAnsible
+    from iqa.system.executor.base.execution import ExecutionBase
 
 
 class NodeAnsible(Node):
     """Ansible implementation for Node interface."""
 
-    def __init__(self, hostname: str, executor: ExecutorAnsible, ip: str = None) -> None:
-        super(NodeAnsible, self).__init__(hostname, executor, ip)
+    implementation: str = "ansible"
+
+    def __init__(
+        self,
+        hostname: str,
+        ip: Optional[str] = None,
+        executor: Optional[ExecutorAnsible] = None,
+        name: Optional[str] = None
+    ) -> None:
         logging.getLogger().info('Initialization of NodeAnsible: %s' % self.hostname)
+        if executor is None:
+            executor = ExecutorFactory.create_executor(self.implementation)
+        super(NodeAnsible, self).__init__(hostname, executor, ip=ip, name=name)
 
     def ping(self) -> bool:
         """Send ping to Ansible node"""

@@ -9,9 +9,15 @@ from timeit import default_timer
 from docker.errors import APIError, NotFound
 from docker.models.containers import Container
 
-from iqa.system.executor.docker.executor_docker import ExecutorDocker
-from iqa.system.node.node import Node
+from iqa.system.node.base.node import Node
 from iqa.utils.docker_util import get_container, get_container_ip
+from iqa.system.executor.executor_factory import ExecutorFactory
+from iqa.system.executor.docker.executor_docker import ExecutorDocker
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Optional, List, Type
 
 logger = logging.getLogger()
 
@@ -19,19 +25,25 @@ logger = logging.getLogger()
 class NodeDocker(Node):
     """Docker implementation for Node interface."""
 
+    implementation: str = "docker"
+
     def __init__(
-            self, hostname: str,
-            executor: ExecutorDocker,
+            self,
+            hostname: str,
             docker_host: str = '',
             docker_network: str = '',
-            ip: str = ''
+            ip: Optional[str] = None,
+            executor: Optional[ExecutorDocker] = None,
+            name: Optional[str] = None
     ) -> None:
-
         logger.info('Initialization of NodeDocker: %s' % hostname)
+        if executor is None:
+            executor = ExecutorFactory.create_executor(self.implementation)
+
         self.hostname: str = hostname
         self.docker_network: str = docker_network
         self.container: Container = self._get_container(docker_host=docker_host)
-        super(NodeDocker, self).__init__(hostname, executor, ip)
+        super(NodeDocker, self).__init__(hostname, executor, ip=ip, name=name)
 
     def ping(self) -> bool:
         """Send ping to Docker node"""
