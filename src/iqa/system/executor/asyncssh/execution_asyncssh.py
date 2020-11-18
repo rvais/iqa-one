@@ -1,28 +1,32 @@
-from typing import Optional, Union
-from iqa.system.executor.execution import ExecutionBase
+from typing import TYPE_CHECKING
+
+from iqa.system.executor.base.execution import ExecutionBase
+
+if TYPE_CHECKING:
+    from typing import Optional, Union, List
 
 
 class ExecutionAsyncSsh(ExecutionBase):
     def _run(self) -> None:
-        pass
+        raise NotImplemented
 
     def wait(self) -> None:
-        pass
+        raise NotImplemented
 
     def is_running(self) -> bool:
-        pass
+        raise NotImplemented
 
     def completed_successfully(self) -> bool:
-        pass
+        raise NotImplemented
 
     def on_timeout(self) -> None:
-        pass
+        raise NotImplemented
 
     def terminate(self) -> None:
-        pass
+        raise NotImplemented
 
-    def read_stdout(self, lines: bool = False) -> Optional[Union[str, list]]:
-        pass
+    def read_stdout(self, lines: bool = False, closefd: bool = True) -> Optional[Union[str, List[str]]]:
+        raise NotImplemented
 
-    def read_stderr(self, lines: bool = False) -> Optional[Union[str, list]]:
-        pass
+    def read_stderr(self, lines: bool = False, closefd: bool = True) -> Optional[Union[str, List[str]]]:
+        raise NotImplemented
