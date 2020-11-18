@@ -1,10 +1,13 @@
 import os
-from typing import Optional
 
-from iqa.system.executor.executor import ExecutorBase
+from iqa.system.executor.base.executor import ExecutorBase
+from iqa.system.executor.asynclocalhost.execution import ExecutionAsyncio
 from iqa.system.command.command_base import CommandBase
 
-from iqa.system.executor.localhost.execution import ExecutionAsyncio
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Optional, List
 
 """
 Executor instance that runs a given Command instance using
@@ -31,9 +34,9 @@ class ExecutorDocker(ExecutorBase):
         self.docker_host: str = ''
         self._command: Optional[CommandBase] = None
 
-    def _command_inside_container(self, command: CommandBase = None, user: Optional[str] = None):
+    def _command_inside_container(self, command: Optional[CommandBase] = None, user: Optional[str] = None):
 
-        docker_args: list = []
+        docker_args: List[str] = []
 
         if user:
             docker_args.extend(['-u', user])
@@ -48,8 +51,12 @@ class ExecutorDocker(ExecutorBase):
         inside_command = self.docker_command(docker_command='exec', docker_args=docker_args)
         return inside_command
 
-    def docker_command(self, docker_command: Optional[str] = None, docker_args: Optional[list] = None,
-                       docker_options: Optional[list] = None):
+    def docker_command(
+        self,
+        docker_command: Optional[str] = None,
+        docker_args: Optional[List[str]] = None,
+        docker_options: Optional[List[str]] = None
+    ):
         """
 
         Args:
@@ -143,9 +150,12 @@ class ExecutorDocker(ExecutorBase):
 
         return docker_command_builder
 
-    async def _execute(self, command: CommandBase = None,
-                       user: Optional[str] = None,
-                       inside_container: bool = True) -> ExecutionAsyncio:
+    async def _execute(
+        self,
+        command: Optional[CommandBase] = None,
+        user: Optional[str] = None,
+        inside_container: bool = True
+    ) -> ExecutionAsyncio:
 
         if inside_container:
             cmd = self._command_inside_container(command, user)
