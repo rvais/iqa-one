@@ -7,17 +7,17 @@ import time
 
 from timeit import default_timer
 from docker.errors import APIError, NotFound
-from docker.models.containers import Container
 
 from iqa.system.node.base.node import Node
 from iqa.utils.docker_util import get_container, get_container_ip
 from iqa.system.executor.executor_factory import ExecutorFactory
-from iqa.system.executor.docker.executor_docker import ExecutorDocker
 
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Optional, List, Type
+    from typing import Optional, Union
+    from docker.models.containers import Container
+    from iqa.system.executor.docker.executor_docker import ExecutorDocker
 
 logger = logging.getLogger()
 
@@ -55,7 +55,12 @@ class NodeDocker(Node):
             )
             return False
 
-    def _get_container(self, timeout=3.0, pause=0.5, docker_host: str = ''):
+    def _get_container(
+        self,
+        timeout: Union[float, int] = 3.0,
+        pause: Union[float, int] = 0.5,
+        docker_host: str = ''
+    ) -> Container:
         """Get Container instance"""
         logger.debug('Retrieving %s container\'s host of %s docker host.' % (self.hostname, self.docker_network))
         ref = default_timer()
