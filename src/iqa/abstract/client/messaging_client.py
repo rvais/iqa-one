@@ -1,9 +1,12 @@
 from abc import abstractmethod
-from typing import Optional
+from typing import TYPE_CHECKING
 
 from iqa.abstract.client.client import Client
-from iqa.abstract.listener import Listener
-from iqa.abstract.message.message import Message
+
+if TYPE_CHECKING:
+    from typing import Optional, List
+    from iqa.abstract.message.message import Message
+    from iqa.abstract.listener import Listener
 
 
 class MessagingClient(Client):
@@ -19,11 +22,11 @@ class MessagingClient(Client):
     def __init__(self, message_buffer: bool = True) -> None:
         super(MessagingClient, self).__init__()
         self.message_buffer: bool = message_buffer
-        self.messages: list = []
+        self.messages: List[Message] = []
         self.message_counter: int = 0
 
     @property
-    def last_message(self) -> Message:
+    def last_message(self) -> Optional[Message]:
         """Method for picking up last received message.
         :return: Last message received or None
         :rtype: iqa.iqa.abstract.message.Message
