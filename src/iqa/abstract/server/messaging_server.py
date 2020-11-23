@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional
+from typing import TYPE_CHECKING
 
-from iqa.abstract.listener import Listener
+if TYPE_CHECKING:
+    from typing import Optional, List
+    from iqa.abstract.listener import Listener
 
 
 class MessagingServer(ABC):
@@ -12,5 +14,5 @@ class MessagingServer(ABC):
         self.connectors: list = []
 
     @abstractmethod
-    def get_url(self, port: int = None, listener: Listener = None) -> str:
+    def get_url(self, port: Optional[int] = None, listener: Optional[Listener] = None) -> str:
         return NotImplemented

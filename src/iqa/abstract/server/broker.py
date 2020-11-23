@@ -1,10 +1,14 @@
 import abc
 import logging
-from typing import List
+from typing import TYPE_CHECKING
 
-from iqa.abstract.destination.address import Address
-from iqa.abstract.destination.queue import Queue
 from iqa.abstract.server.messaging_server import MessagingServer
+
+if TYPE_CHECKING:
+    from typing import List
+#    from iqa.abstract.destination.routing_type import RoutingType
+    from iqa.abstract.destination.address import Address
+    from iqa.abstract.destination.queue import Queue
 
 
 class Broker(MessagingServer):
