@@ -21,11 +21,13 @@
 Utility class to help executing OpenShift standard operations
 """
 import logging
-from typing import Any, Callable
+from typing import TYPE_CHECKING
 
-from iqa.system.executor.executor import ExecutorBase
-from iqa.system.executor.execution import ExecutionBase
 from iqa.system.command.command_base import CommandBase
+
+if TYPE_CHECKING:
+    from iqa.system.executor.base.executor import ExecutorBase
+    from iqa.system.executor.base.execution import ExecutionBase
 
 
 class OpenShiftUtil:
@@ -48,7 +50,7 @@ class OpenShiftUtil:
         :return:
         """
 
-        def wrap(*args, **kwargs) -> Callable[..., Any]:
+        def wrap(*args, **kwargs):
             instance = args[0]
             assert instance.login().completed_successfully()
             return func(*args, **kwargs)
@@ -75,7 +77,7 @@ class OpenShiftUtil:
             stderr=True,
             stdout=True,
         )
-        execution: ExecutionBase = self.executor.execute(cmd_login)
+        execution: ExecutionBase = await self.executor.execute(cmd_login)
         execution.wait()
         if not execution.completed_successfully():
             self._logger.debug(
@@ -98,7 +100,7 @@ class OpenShiftUtil:
             stderr=True,
             stdout=True,
         )
-        execution: ExecutionBase = self.executor.execute(cmd_scale_up)
+        execution: ExecutionBase = await self.executor.execute(cmd_scale_up)
         execution.wait()
         if not execution.completed_successfully():
             self._logger.debug(

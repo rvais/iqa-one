@@ -1,11 +1,15 @@
-from typing import Any
+from abc import ABCMeta, ABC
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Any, Type
 
 
-class Singleton:
+class Singleton(object):
     """Decorator Singleton"""
 
-    def __init__(self, cls) -> None:
-        self._cls: Any = cls
+    def __init__(self, cls: Type) -> None:
+        self._cls = cls
 
     def Instance(self) -> Any:
         try:
@@ -17,15 +21,15 @@ class Singleton:
     def __call__(self) -> Any:
         raise TypeError('Singletons must be accessed through `Instance()`.')
 
-    def __instancecheck__(self, inst) -> Any:
+    def __instancecheck__(self, inst: Type) -> Any:
         return isinstance(inst, self._cls)
 
 
-class SingletonMeta(type):
+class SingletonMeta(ABCMeta):
     """Metaclass for Singleton classes"""
 
     def __init__(cls, name, bases, dictionary):
-        super(SingletonMeta, cls).__init__(cls, bases, dictionary)
+        super(SingletonMeta, cls).__init__(name, bases, dictionary)
         cls._instanceDict = {}
 
     def __call__(cls, *args, **kwargs):
@@ -37,3 +41,7 @@ class SingletonMeta(type):
                 *args, **kwargs
             )
         return cls._instanceDict[argset]
+
+
+class ABCSingleton(ABC, metaclass=SingletonMeta):
+    pass

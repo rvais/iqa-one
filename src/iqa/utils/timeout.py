@@ -25,7 +25,10 @@ import logging
 import threading
 import time
 
-from typing import Callable, List, Optional, Union
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Callable, List, Optional, Union
 
 logger: logging.Logger = logging.getLogger(__name__)
 

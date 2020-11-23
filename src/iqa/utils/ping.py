@@ -2,7 +2,7 @@ import platform
 import subprocess
 
 
-def ping(host) -> bool:
+def ping(host: str) -> bool:
     """
     Simple implementation of Ping node with system command ICMP
     """

@@ -9,6 +9,10 @@ import atexit
 import logging
 import subprocess
 import time
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Optional, List
 
 
 class Process(subprocess.Popen):
@@ -20,7 +24,7 @@ class Process(subprocess.Popen):
     MAX_ATTEMPTS: int = 3
     ATTEMPT_DELAY: int = 1
 
-    def __init__(self, args: list, name=None, **kwargs) -> None:
+    def __init__(self, args: List[str], name: Optional[str] = None, **kwargs) -> None:
         self._logger: logging.Logger = logging.getLogger(self.__class__.__module__)
         self.name: str = name
         atexit.register(self.teardown)

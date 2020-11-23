@@ -7,7 +7,11 @@ import os
 
 import docker
 from docker.errors import APIError, NotFound
-from docker.models.containers import Container
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Optional
+    from docker.models.containers import Container
 
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -18,13 +22,13 @@ CONTAINER_STATUS_RUNNING: str = 'running'
 CONTAINER_STATUS_EXITED: str = 'exited'
 
 
-def get_client(docker_host: str = ''):
+def get_client(docker_host: Optional[str] = None):
     if docker_host:
         _env['DOCKER_HOST'] = docker_host
     return docker.from_env(environment=_env)
 
 
-def get_container(name: str, docker_host: str = '') -> Container:
+def get_container(name: str, docker_host: Optional[str] = None) -> Container:
     """
     Returns the container instance for the given name.
     A docker.errors.NotFound exception is raised in case the given
@@ -33,12 +37,13 @@ def get_container(name: str, docker_host: str = '') -> Container:
     :param name:
     :return:
     """
+    docker_host = docker_host if docker_host is not None else ''
     client = get_client(docker_host=docker_host)
     container = client.containers.get(name)
     return container
 
 
-def get_container_ip(container: Container, network_name='') -> str:
+def get_container_ip(container: Container, network_name: Optional[str] = None) -> str:
     """
     Returns the IPAddress assigned to the given container name (on the given network).
     :param container:
