@@ -2,14 +2,18 @@
 Specialized implementation of external command for java clients (currently cli-qpid.jar only).
 """
 import os.path as os_path
-from typing import Any
-from os import PathLike
-from iqa.components.clients.external.command.client_command import (
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Any, List
+    from os import PathLike
+
+from iqa.components.implementations.clients.external.command.client_command import (
     ConnectorClientCommand,
     ReceiverClientCommand,
     SenderClientCommand,
 )
-from iqa.components.clients.external.java.command.java_options import (
+from iqa.components.implementations.clients.external.java.command.java_options import (
     JavaControlOptionsCommon,
     JavaConnectionOptionsCommon,
     JavaControlOptionsReceiver,
@@ -39,8 +43,10 @@ class JavaConnectorClientCommand(ConnectorClientCommand):
         self.control: JavaControlOptionsCommon = JavaControlOptionsCommon()
         self.connection: JavaConnectionOptionsCommon = JavaConnectionOptionsCommon()
 
-    def main_command(self) -> list:
-        jar = os_path.join(self.path_to_exec, 'cli-qpid-jms.jar')
+    def main_command(self) -> List[str]:
+        jar: str = 'cli-qpid-jms.jar'
+        if self.path_to_exec:
+            jar = os_path.join(self.path_to_exec, jar)
         return ['java', '-jar', jar, "connector"]
 
 
@@ -65,8 +71,10 @@ class JavaReceiverClientCommand(ReceiverClientCommand):
         self.control: JavaControlOptionsReceiver = JavaControlOptionsReceiver()
         self.connection: JavaConnectionOptionsCommon = JavaConnectionOptionsCommon()
 
-    def main_command(self) -> list:
-        jar = os_path.join(self.path_to_exec, 'cli-qpid-jms.jar')
+    def main_command(self) -> List[str]:
+        jar: str = 'cli-qpid-jms.jar'
+        if self.path_to_exec:
+            jar = os_path.join(self.path_to_exec, jar)
         return ['java', '-jar', jar, "receiver"]
 
 
@@ -91,6 +99,8 @@ class JavaSenderClientCommand(SenderClientCommand):
         self.control: JavaControlOptionsSenderReceiver = JavaControlOptionsSenderReceiver()
         self.connection: JavaConnectionOptionsCommon = JavaConnectionOptionsCommon()
 
-    def main_command(self) -> list:
-        jar = os_path.join(self.path_to_exec, 'cli-qpid-jms.jar')
+    def main_command(self) -> List[str]:
+        jar: str = 'cli-qpid-jms.jar'
+        if self.path_to_exec:
+            jar = os_path.join(self.path_to_exec, jar)
         return ['java', '-jar', jar, "sender"]
