@@ -1,21 +1,29 @@
+
+from typing import TYPE_CHECKING
 from urllib.parse import urlparse, urlunparse
 
 from iqa.abstract.client.sender import Sender
-from iqa.abstract.message.message import Message
-from iqa.components.clients.external.nodejs.client import ClientNodeJS
-from iqa.components.clients.external.nodejs.command.nodejs_commands import (
+from iqa.components.implementations.clients.external.nodejs.client import ClientNodeJS
+from iqa.components.implementations.clients.external.nodejs.command.nodejs_commands import (
     NodeJSSenderClientCommand,
 )
-from iqa.system.node.node import Node
+
+if TYPE_CHECKING:
+    from os import PathLike
+    from typing import Optional, Any
+    from iqa.system.node.base.node import Node
+    from iqa.abstract.message.message import Message
 
 
 class SenderNodeJS(ClientNodeJS, Sender):
     """External NodeJS sender client."""
 
     _command: NodeJSSenderClientCommand
+    path_to_exec: Optional[PathLike[Any]]
 
-    def __init__(self, name: str, node: Node, **kwargs) -> None:
+    def __init__(self, name: str, node: Node, path_to_exec: Optional[PathLike[Any]] = None, **kwargs) -> None:
         super(SenderNodeJS, self).__init__(name, node, **kwargs)
+        self.path_to_exec = path_to_exec
 
     def _set_url(self, url: str) -> None:
         p_url = urlparse(url)
@@ -37,11 +45,11 @@ class SenderNodeJS(ClientNodeJS, Sender):
 
     def set_ssl_auth(
         self,
-        pem_file: str = None,
-        key_file: str = None,
-        keystore: str = None,
-        keystore_pass: str = None,
-        keystore_alias: str = None,
+        pem_file: Optional[str] = None,
+        key_file: Optional[str] = None,
+        keystore: Optional[str] = None,
+        keystore_pass: Optional[str] = None,
+        keystore_alias: Optional[str] = None,
     ) -> None:
         self._command.connection.conn_ssl_certificate = pem_file
         self._command.connection.conn_ssl_private_key = key_file
@@ -66,3 +74,6 @@ class SenderNodeJS(ClientNodeJS, Sender):
     def _send(self, message: Message, **kwargs) -> None:
         self._command.message.msg_content = message.application_data
         self.execution = self.node.execute(self.command)
+
+    def connect(self) -> bool:
+        raise NotImplementedError

@@ -1,20 +1,27 @@
-from typing import Optional
+from typing import TYPE_CHECKING
 from urllib.parse import urlparse
 
-from iqa.components.clients.external.nodejs.command.nodejs_commands import (
+from iqa.components.implementations.clients.external.nodejs.client import ClientNodeJS
+
+if TYPE_CHECKING:
+    from os import PathLike
+    from typing import Optional, Any
+    from iqa.system.node.base.node import Node
+
+from iqa.components.implementations.clients.external.nodejs.command.nodejs_commands import (
     NodeJSConnectorClientCommand,
 )
-from iqa.system.node.node import Node
-from .client import ClientNodeJS
 
 
 class ConnectorNodeJS(ClientNodeJS):
     """External NodeJS connector client."""
 
     _command: NodeJSConnectorClientCommand
+    path_to_exec: Optional[PathLike[Any]]
 
-    def __init__(self, name: str, node: Node, **kwargs) -> None:
+    def __init__(self, name: str, node: Node, path_to_exec: Optional[PathLike[Any]] = None, **kwargs) -> None:
         super(ConnectorNodeJS, self).__init__(name, node, **kwargs)
+        self.path_to_exec = path_to_exec
 
     def _set_url(self, url: str) -> None:
         p_url = urlparse(url)

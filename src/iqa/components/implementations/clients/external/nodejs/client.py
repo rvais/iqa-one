@@ -1,7 +1,11 @@
-from iqa.abstract.listener import Listener
-from iqa.components.clients.external import ClientExternal
-from iqa.components.clients.external.command.client_command import ClientCommandBase
-from iqa.system.node.node import Node
+from iqa.components.implementations.clients.external.client_external import ClientExternal
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Optional
+    from iqa.abstract.listener import Listener
+    from iqa.system.node.base.node import Node
+    from iqa.components.implementations.clients.external.command.client_command import ClientCommandBase
 
 
 class ClientNodeJS(ClientExternal):
@@ -32,16 +36,16 @@ class ClientNodeJS(ClientExternal):
 
     def set_ssl_auth(
         self,
-        pem_file: str = None,
-        key_file: str = None,
-        keystore: str = None,
-        keystore_pass: str = None,
-        keystore_alias: str = None,
+        pem_file: Optional[str] = None,
+        key_file: Optional[str] = None,
+        keystore: Optional[str] = None,
+        keystore_pass: Optional[str] = None,
+        keystore_alias: Optional[str] = None,
     ):
         pass
 
     def set_endpoint(self, listener: Listener):
         pass
 
-    def connect(self):
-        pass
+    def connect(self) -> bool:
+        raise NotImplementedError

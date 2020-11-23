@@ -1,20 +1,27 @@
+from typing import TYPE_CHECKING
 from urllib.parse import urlparse, urlunparse
 
 from iqa.abstract.client.receiver import Receiver
-from iqa.components.clients.external.nodejs.client import ClientNodeJS
-from iqa.components.clients.external.nodejs.command.nodejs_commands import (
+from iqa.components.implementations.clients.external.nodejs.client import ClientNodeJS
+from iqa.components.implementations.clients.external.nodejs.command.nodejs_commands import (
     NodeJSReceiverClientCommand,
 )
-from iqa.system.node.node import Node
+
+if TYPE_CHECKING:
+    from os import PathLike
+    from typing import Optional, Any
+    from iqa.system.node.base.node import Node
 
 
 class ReceiverNodeJS(ClientNodeJS, Receiver):
     """External NodeJS receiver client."""
 
     _command: NodeJSReceiverClientCommand
+    path_to_exec: Optional[PathLike[Any]]
 
-    def __init__(self, name: str, node: Node, **kwargs) -> None:
+    def __init__(self, name: str, node: Node, path_to_exec: Optional[PathLike[Any]] = None, **kwargs) -> None:
         super(ReceiverNodeJS, self).__init__(name, node, **kwargs)
+        self.path_to_exec = path_to_exec
 
     def _set_url(self, url: str) -> None:
         p_url = urlparse(url)
@@ -36,11 +43,11 @@ class ReceiverNodeJS(ClientNodeJS, Receiver):
 
     def set_ssl_auth(
         self,
-        pem_file: str = None,
-        key_file: str = None,
-        keystore: str = None,
-        keystore_pass: str = None,
-        keystore_alias: str = None,
+        pem_file: Optional[str] = None,
+        key_file: Optional[str] = None,
+        keystore: Optional[str] = None,
+        keystore_pass: Optional[str] = None,
+        keystore_alias: Optional[str] = None,
     ) -> None:
         self._command.connection.conn_ssl_certificate = pem_file
         self._command.connection.conn_ssl_private_key = key_file
@@ -64,3 +71,6 @@ class ReceiverNodeJS(ClientNodeJS, Receiver):
 
     def _receive(self) -> None:
         self.execution = self.node.execute(self.command)
+
+    def connect(self) -> bool:
+        raise NotImplementedError
