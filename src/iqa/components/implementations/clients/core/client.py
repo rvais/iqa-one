@@ -1,7 +1,11 @@
+from typing import TYPE_CHECKING
+
 from iqa.abstract.client.messaging_client import MessagingClient
-from iqa.abstract.listener import Listener
 from iqa.components.abstract.component import Component
-from iqa.system.node.node import Node
+
+if TYPE_CHECKING:
+    from iqa.abstract.listener import Listener
+    from iqa.system.node.base.node import Node
 
 
 class CoreMessagingClient(Component, MessagingClient):
@@ -22,7 +26,6 @@ class CoreMessagingClient(Component, MessagingClient):
 
     def set_url(self, url: str) -> None:
         pass
-
 
 #
 # # -*- coding: utf-8 -*-

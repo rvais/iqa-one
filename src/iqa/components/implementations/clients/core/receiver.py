@@ -1,7 +1,11 @@
+from typing import TYPE_CHECKING
+
 from iqa.abstract.client.receiver import Receiver
-from iqa.abstract.listener import Listener
-from iqa.components.clients.core.client import CoreMessagingClient
-from iqa.system.node.node import Node
+from iqa.components.implementations.clients.core.client import CoreMessagingClient
+
+if TYPE_CHECKING:
+    from iqa.abstract.listener import Listener
+    from iqa.system.node.base.node import Node
 
 
 class ReceiverCore(CoreMessagingClient, Receiver):
