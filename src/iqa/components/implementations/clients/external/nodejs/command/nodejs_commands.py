@@ -1,16 +1,23 @@
 """
 Specialized implementation of external command for cli-rhea clients (NodeJS).
 """
-from iqa.components.clients.external.command.client_command import (
+import os.path as os_path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Optional, List, Any
+    from os import PathLike
+
+from iqa.components.implementations.clients.external.command.client_command import (
     ConnectorClientCommand,
     ReceiverClientCommand,
     SenderClientCommand,
 )
-from iqa.components.clients.external.command.options.client_options import (
+from iqa.components.implementations.clients.external.command.options.client_options import (
     LinkOptionsSenderReceiver,
     ReactorOptionsSenderReceiver,
 )
-from iqa.components.clients.external.nodejs.command.nodejs_options import (
+from iqa.components.implementations.clients.external.nodejs.command.nodejs_options import (
     NodeJSControlOptionsCommon,
     NodeJSConnectionOptionsCommon,
     NodeJSControlOptionsReceiver,
@@ -27,6 +34,7 @@ class NodeJSConnectorClientCommand(ConnectorClientCommand):
 
     def __init__(
         self,
+        path_to_exec: Optional[PathLike[Any]] = None,
         stdout: bool = False,
         stderr: bool = False,
         daemon: bool = False,
@@ -34,13 +42,16 @@ class NodeJSConnectorClientCommand(ConnectorClientCommand):
         encoding: str = 'utf-8',
     ) -> None:
         super(NodeJSConnectorClientCommand, self).__init__(
-            stdout, stderr, daemon, timeout, encoding
+            path_to_exec, stdout, stderr, daemon, timeout, encoding
         )
         self.control: NodeJSControlOptionsCommon = NodeJSControlOptionsCommon()
         self.connection: NodeJSConnectionOptionsCommon = NodeJSConnectionOptionsCommon()
 
-    def main_command(self) -> list:
-        return ['cli-rhea-connector']
+    def main_command(self) -> List[str]:
+        executable: str = 'cli-rhea-connector'
+        if self.path_to_exec:
+            executable = os_path.join(self.path_to_exec, executable)
+        return [executable]
 
 
 class NodeJSReceiverClientCommand(ReceiverClientCommand):
@@ -52,6 +63,7 @@ class NodeJSReceiverClientCommand(ReceiverClientCommand):
 
     def __init__(
         self,
+        path_to_exec: Optional[PathLike[Any]] = None,
         stdout: bool = False,
         stderr: bool = False,
         daemon: bool = False,
@@ -59,15 +71,18 @@ class NodeJSReceiverClientCommand(ReceiverClientCommand):
         encoding: str = 'utf-8',
     ) -> None:
         super(NodeJSReceiverClientCommand, self).__init__(
-            stdout, stderr, daemon, timeout, encoding
+            path_to_exec, stdout, stderr, daemon, timeout, encoding
         )
         self.control: NodeJSControlOptionsReceiver = NodeJSControlOptionsReceiver()
         self.connection: NodeJSConnectionOptionsCommon = NodeJSConnectionOptionsCommon()
         self.link: LinkOptionsSenderReceiver = LinkOptionsSenderReceiver()
         self.reactor: ReactorOptionsSenderReceiver = ReactorOptionsSenderReceiver()
 
-    def main_command(self) -> list:
-        return ['cli-rhea-receiver']
+    def main_command(self) -> List[str]:
+        executable: str = 'cli-rhea-receiver'
+        if self.path_to_exec:
+            executable = os_path.join(self.path_to_exec, executable)
+        return [executable]
 
 
 class NodeJSSenderClientCommand(SenderClientCommand):
@@ -79,6 +94,7 @@ class NodeJSSenderClientCommand(SenderClientCommand):
 
     def __init__(
         self,
+        path_to_exec: Optional[PathLike[Any]] = None,
         stdout: bool = False,
         stderr: bool = False,
         daemon: bool = False,
@@ -86,12 +102,15 @@ class NodeJSSenderClientCommand(SenderClientCommand):
         encoding: str = 'utf-8',
     ) -> None:
         super(NodeJSSenderClientCommand, self).__init__(
-            stdout, stderr, daemon, timeout, encoding
+          path_to_exec, stdout, stderr, daemon, timeout, encoding
         )
         self.control: NodeJSControlOptionsSender = NodeJSControlOptionsSender()
         self.connection: NodeJSConnectionOptionsCommon = NodeJSConnectionOptionsCommon()
         self.link: LinkOptionsSenderReceiver = LinkOptionsSenderReceiver()
         self.reactor: ReactorOptionsSenderReceiver = ReactorOptionsSenderReceiver()
 
-    def main_command(self) -> list:
-        return ['cli-rhea-sender']
+    def main_command(self) -> List[str]:
+        executable: str = 'cli-rhea-sender'
+        if self.path_to_exec:
+            executable = os_path.join(self.path_to_exec, executable)
+        return [executable]
