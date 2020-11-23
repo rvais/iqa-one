@@ -1,9 +1,12 @@
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Optional
 
-from iqa.system.executor.executor import ExecutorBase
-from iqa.system.executor.execution import ExecutionBase
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Optional
+    from iqa.system.executor.base.executor import ExecutorBase
+    from iqa.system.executor.base.execution import ExecutionBase
 
 
 class ServiceStatus(Enum):
@@ -20,8 +23,8 @@ class Service(ABC):
 
     TIMEOUT: int = 30
 
-    def __init__(self, name: Optional[str], executor: ExecutorBase) -> None:
-        self.name: Optional[str] = name
+    def __init__(self, executor: ExecutorBase, name: Optional[str] = None, **kwargs) -> None:
+        self.name: str = name if name is not None else self.__name__
         self.executor: ExecutorBase = executor
 
     @abstractmethod
