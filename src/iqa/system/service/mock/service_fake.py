@@ -1,9 +1,12 @@
 import abc
-from typing import Optional
 
-from iqa.system.executor.executor import ExecutorBase
-from iqa.system.executor.execution import ExecutionBase
-from .service import Service, ServiceStatus
+from typing import TYPE_CHECKING
+from iqa.system.service.base.service import Service, ServiceStatus
+
+if TYPE_CHECKING:
+    # from typing import Optional
+    from iqa.system.executor.base.executor import ExecutorBase
+    from iqa.system.executor.base.execution import ExecutionBase
 
 
 class ServiceFake(Service):
@@ -13,10 +16,8 @@ class ServiceFake(Service):
 
     TIMEOUT: int = 30
 
-    def __init__(self, name: Optional[str], executor: ExecutorBase):
-        super().__init__(name, executor)
-        self.name: Optional[str] = name
-        self.executor: ExecutorBase = executor
+    def __init__(self, executor: ExecutorBase, name: str, **kwargs) -> None:
+        super().__init__(executor, name, **kwargs)
 
     @abc.abstractmethod
     def status(self) -> ServiceStatus:
