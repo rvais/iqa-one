@@ -2,17 +2,24 @@ import abc
 import logging
 import os
 import posixpath
-from typing import Union, Optional
 
 import dpath.util
 import yaml
 
 from iqa.system.command.command_ansible import CommandBaseAnsible
 from iqa.system.command.command_base import CommandBase
-from iqa.system.executor.execution import ExecutionBase
-from iqa.system.node import NodeAnsible, NodeLocal
-from iqa.system.node.node_docker import NodeDocker
+from iqa.system.node.ansible.node_ansible import NodeAnsible
+from iqa.system.node.localhost.node_localhost import NodeLocal
+from iqa.system.node.docker.node_docker import NodeDocker
 from iqa.utils.exceptions import IQAConfigurationException
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Union, Optional, List, Any
+    from iqa.system.executor.base.execution import ExecutionBase
+    from iqa.components.abstract.component import Component
+    from os import PathLike
 
 LOGGER: logging.Logger = logging.getLogger(__name__)
 
@@ -27,11 +34,11 @@ class Configuration(object):
     original_config_file: str
     local_config_dir: str  # local configuration directory (ansible inventory dir)
     node_config_dir: Union[int, str, list, dict]  # remote configuration directory
-    object_list: list = []
-    yaml_data = None
-    old_yaml_data = None  # re|store configuration data
+    object_list: List[Any] = []
+    yaml_data: Optional[Union[dict, yaml.YAMLObject]] = None
+    old_yaml_data: Optional[Union[dict, yaml.YAMLObject]] = None  # re|store configuration data
 
-    def __init__(self, component, **kwargs) -> None:
+    def __init__(self, component: Component, **kwargs) -> None:
         self.component = component
 
         if self.config_file in kwargs.keys():
@@ -56,7 +63,9 @@ class Configuration(object):
             self.local_config_dir = os.getcwd()
 
     def _data_getter(
-        self, path: str, default: Optional[Union[int, str, list, dict]]
+        self,
+        path: Union[str, PathLike],
+        default: Optional[Union[int, str, list, dict]]
     ) -> Optional[Union[int, str, list, dict]]:
         """General function to query data from provided external data dictionary.
 
@@ -75,7 +84,7 @@ class Configuration(object):
             return default
         return output
 
-    def load_configuration_yaml(self, path: str) -> None:
+    def load_configuration_yaml(self, path: Union[str, PathLike]) -> None:
         """Load provided configuration YAML file.
 
         :param path: path to configuration file
@@ -104,7 +113,7 @@ class Configuration(object):
         pass
 
     @abc.abstractmethod
-    def create_configuration(self, config_file_path: str) -> None:
+    def create_configuration(self, config_file_path: Union[str, PathLike]) -> None:
         pass
 
     @abc.abstractmethod
