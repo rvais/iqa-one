@@ -3,18 +3,20 @@ import posixpath
 import re
 import time
 from enum import Enum
-from typing import Union, Optional
-
-from typing.re import Pattern
+from typing import TYPE_CHECKING
 
 from iqa.system.command.command_ansible import CommandBaseAnsible
 from iqa.system.command.command_base import CommandBase
-from iqa.system.executor.executor import ExecutorBase
-from iqa.system.executor.execution import ExecutionBase
 from iqa.system.executor.ansible.executor_ansible import ExecutorAnsible
-from iqa.system.service.service import ServiceStatus
-from iqa.system.service.service_fake import ServiceFake
+from iqa.system.service.base.service import ServiceStatus
+from iqa.system.service.mock.service_fake import ServiceFake
 from iqa.utils.tcp_util import is_tcp_port_available
+
+if TYPE_CHECKING:
+    from typing import Optional, Union
+    from typing.re import Pattern
+    from iqa.system.executor.base.executor import ExecutorBase
+    from iqa.system.executor.base.execution import ExecutionBase
 
 
 class ServiceFakeArtemis(ServiceFake):
@@ -27,9 +29,9 @@ class ServiceFakeArtemis(ServiceFake):
 
     _logger: logging.Logger = logging.getLogger(__name__)
 
-    def __init__(self, name: Optional[str], executor: ExecutorBase, **kwargs):
-        super().__init__(name, executor)
-        self.name: Optional[str] = 'artemis-service'
+    def __init__(self, executor: ExecutorBase, name: Optional[str] = None, **kwargs) -> None:
+        name = name if name is not None or name != '' else 'artemis-service'
+        super().__init__(executor, name, **kwargs)
 
         self.ansible_host: str = kwargs.get('ansible_host', 'localhost')
         self.service_default_port: str = kwargs.get('artemis_port', '61616')
@@ -66,7 +68,7 @@ class ServiceFakeArtemis(ServiceFake):
             stdout=True,
             timeout=self.TIMEOUT,
         )
-        execution: ExecutionBase = self.executor.execute(cmd_status)
+        execution: ExecutionBase = await self.executor.execute(cmd_status)
 
         service_output: Optional[Union[str, list]] = execution.read_stdout()
 
@@ -91,14 +93,14 @@ class ServiceFakeArtemis(ServiceFake):
         return ServiceStatus.UNKNOWN
 
     def start(self, wait_for_messaging=False) -> ExecutionBase:
-        execution: ExecutionBase = self.executor.execute(
+        execution: ExecutionBase = await self.executor.execute(
             self._create_command(self.ServiceSystemState.STARTED)
         )
         self._wait_for_messaging(wait_for_messaging)
         return execution
 
     def stop(self) -> ExecutionBase:
-        return self.executor.execute(
+        return await self.executor.execute(
             self._create_command(self.ServiceSystemState.STOPPED)
         )
 
@@ -109,7 +111,7 @@ class ServiceFakeArtemis(ServiceFake):
         return NotImplemented
 
     def restart(self, wait_for_messaging=False) -> ExecutionBase:
-        execution: ExecutionBase = self.executor.execute(
+        execution: ExecutionBase = await self.executor.execute(
             self._create_command(self.ServiceSystemState.RESTARTED)
         )
         self._wait_for_messaging(wait_for_messaging)
