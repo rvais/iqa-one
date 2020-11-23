@@ -5,7 +5,7 @@ import os.path as os_path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Any, List
+    from typing import Optional, List, Any
     from os import PathLike
 
 from iqa.components.implementations.clients.external.command.client_command import (
@@ -30,7 +30,7 @@ class JavaConnectorClientCommand(ConnectorClientCommand):
 
     def __init__(
         self,
-        path_to_exec: PathLike[Any] = None,
+        path_to_exec: Optional[PathLike[Any]] = None,
         stdout: bool = False,
         stderr: bool = False,
         daemon: bool = False,
@@ -53,7 +53,7 @@ class JavaConnectorClientCommand(ConnectorClientCommand):
 class JavaReceiverClientCommand(ReceiverClientCommand):
     def __init__(
         self,
-        path_to_exec: PathLike[Any] = None,
+        path_to_exec: Optional[PathLike[Any]] = None,
         stdout: bool = False,
         stderr: bool = False,
         daemon: bool = False,
@@ -81,7 +81,7 @@ class JavaReceiverClientCommand(ReceiverClientCommand):
 class JavaSenderClientCommand(SenderClientCommand):
     def __init__(
         self,
-        path_to_exec: PathLike[Any] = None,
+        path_to_exec: Optional[PathLike[Any]] = None,
         stdout: bool = False,
         stderr: bool = False,
         daemon: bool = False,

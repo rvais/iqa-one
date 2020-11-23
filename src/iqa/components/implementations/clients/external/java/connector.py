@@ -1,19 +1,22 @@
-from typing import Optional
+from typing import TYPE_CHECKING
 from urllib.parse import urlparse, unquote
-from typing import Any
-from os import PathLike
-from iqa.components.clients.external.java.command.java_commands import JavaConnectorClientCommand
-from iqa.system.node.node import Node
-from .client import ClientJava
+
+from iqa.components.implementations.clients.external.java.command.java_commands import JavaConnectorClientCommand
+from iqa.components.implementations.clients.external.java.client import ClientJava
+
+if TYPE_CHECKING:
+    from os import PathLike
+    from typing import Optional, Any
+    from iqa.system.node.base.node import Node
 
 
 class ConnectorJava(ClientJava):
     """External Java Qpid JMS connector client."""
 
     _command: JavaConnectorClientCommand
-    path_to_exec: PathLike[Any]
+    path_to_exec: Optional[PathLike[Any]]
 
-    def __init__(self, name: str, node: Node, path_to_exec: PathLike[Any] = None, **kwargs) -> None:
+    def __init__(self, name: str, node: Node, path_to_exec: Optional[PathLike[Any]] = None, **kwargs) -> None:
         super(ConnectorJava, self).__init__(name, node, **kwargs)
         self.path_to_exec = path_to_exec
 

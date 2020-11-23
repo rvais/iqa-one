@@ -1,6 +1,11 @@
-from iqa.abstract.listener import Listener
-from iqa.components.clients.external import ClientExternal
-from iqa.components.clients.external.command.client_command import ClientCommandBase
+from iqa.components.implementations.clients.external.client_external import ClientExternal
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Optional
+    from iqa.abstract.listener import Listener
+    from iqa.system.node.base.node import Node
+    from iqa.components.implementations.clients.external.command.client_command import ClientCommandBase
 
 
 class ClientJava(ClientExternal):
@@ -10,7 +15,7 @@ class ClientJava(ClientExternal):
     implementation: str = 'java'
     version: str = '1.0.1'
 
-    def __init__(self, name: str, node, **kwargs):
+    def __init__(self, name: str, node: Node, **kwargs):
         super(ClientJava, self).__init__(name, node, **kwargs)
 
     def _new_command(
@@ -31,16 +36,16 @@ class ClientJava(ClientExternal):
 
     def set_ssl_auth(
         self,
-        pem_file: str = None,
-        key_file: str = None,
-        keystore: str = None,
-        keystore_pass: str = None,
-        keystore_alias: str = None,
+        pem_file: Optional[str] = None,
+        key_file: Optional[str] = None,
+        keystore: Optional[str] = None,
+        keystore_pass: Optional[str] = None,
+        keystore_alias: Optional[str] = None,
     ):
         pass
 
     def set_endpoint(self, listener: Listener):
         pass
 
-    def connect(self):
-        pass
+    def connect(self) -> bool:
+        raise NotImplementedError
