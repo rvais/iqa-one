@@ -1,13 +1,16 @@
 import logging
 from enum import Enum
-from typing import Optional
+from typing import TYPE_CHECKING
 
 from docker.errors import APIError, NotFound
 
-from iqa.system.executor.docker.executor_docker import ExecutorDocker
-from iqa.system.executor.execution import ExecutionBase
-from iqa.system.service.service import Service, ServiceStatus
+from iqa.system.service.base.service import Service, ServiceStatus
 from iqa.utils.docker_util import get_container
+
+if TYPE_CHECKING:
+    from typing import Optional
+    from iqa.system.executor.base.execution import ExecutionBase
+    from iqa.system.executor.docker.executor_docker import ExecutorDocker
 
 
 class ServiceDocker(Service):
@@ -19,8 +22,8 @@ class ServiceDocker(Service):
 
     _logger: logging.Logger = logging.getLogger(__name__)
 
-    def __init__(self, name: str, executor: ExecutorDocker) -> None:
-        super().__init__(name, executor)
+    def __init__(self, executor: ExecutorDocker, name: str, **kwargs) -> None:
+        super().__init__(executor, name, **kwargs)
         self.docker_host: Optional[str] = executor.docker_host
         self.container = get_container(name=self.name)
 
