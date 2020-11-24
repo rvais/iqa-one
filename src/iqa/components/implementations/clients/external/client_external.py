@@ -1,11 +1,15 @@
-from typing import Optional
+from typing import TYPE_CHECKING
 
 from iqa.abstract.client.messaging_client import MessagingClient
-from iqa.abstract.listener import Listener
 from iqa.components.abstract.component import Component
-from iqa.components.clients.external.command.client_command import ClientCommandBase
-from iqa.system.executor.execution import ExecutionBase
-from iqa.system.node.node import Node
+from iqa.components.implementations.clients.external.command.client_command import ClientCommandBase
+
+if TYPE_CHECKING:
+    from typing import Optional
+    # from os import PathLike Not used for now, but might replace path_to_exec in subclasses if appropriate
+    from iqa.system.node.base.node import Node
+    from iqa.abstract.listener import Listener
+    from iqa.system.executor.base.execution import ExecutionBase
 
 
 class ClientExternal(Component, MessagingClient):
@@ -92,11 +96,11 @@ class ClientExternal(Component, MessagingClient):
 
     def set_ssl_auth(
         self,
-        pem_file: str = None,
-        key_file: str = None,
-        keystore: str = None,
-        keystore_pass: str = None,
-        keystore_alias: str = None,
+        pem_file: Optional[str] = None,
+        key_file: Optional[str] = None,
+        keystore: Optional[str] = None,
+        keystore_pass: Optional[str] = None,
+        keystore_alias: Optional[str] = None,
     ):
         """
         Allows implementing clients to use the SSL credentials according to each implementing model.
