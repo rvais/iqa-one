@@ -7,6 +7,7 @@ if TYPE_CHECKING:
     from typing import Optional, List
     from iqa.abstract.message.message import Message
     from iqa.abstract.listener import Listener
+    from iqa.components.abstract.network.protocol.protocol import Protocol
 
 
 class MessagingClient(Client):
@@ -15,7 +16,7 @@ class MessagingClient(Client):
     """
 
     # Required variables
-    supported_protocols: list = []
+    supported_protocols: List[Protocol] = []
     name: Optional[str] = None
     version: Optional[str] = None
 
