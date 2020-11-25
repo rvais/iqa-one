@@ -2,8 +2,10 @@ from typing import TYPE_CHECKING
 
 from iqa.abstract.client.messaging_client import MessagingClient
 from iqa.components.abstract.component import Component
+from iqa.components.abstract.network.protocol.protocol import Protocol
 
 if TYPE_CHECKING:
+    from typing import List
     from iqa.abstract.listener import Listener
     from iqa.system.node.base.node import Node
 
@@ -11,7 +13,7 @@ if TYPE_CHECKING:
 class CoreMessagingClient(Component, MessagingClient):
     """Internal core Proton mapping client."""
 
-    supported_protocols: list = ["AMQP10"]
+    supported_protocols: List[Protocol] = [Protocol.AMQP10]
     implementation: str = 'core'
     version: str = '0.1'
 
