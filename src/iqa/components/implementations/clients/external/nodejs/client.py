@@ -1,8 +1,9 @@
 from iqa.components.implementations.clients.external.client_external import ClientExternal
+from iqa.components.abstract.network.protocol.protocol import Protocol
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from typing import Optional
+    from typing import Optional, List
     from iqa.abstract.listener import Listener
     from iqa.system.node.base.node import Node
     from iqa.components.implementations.clients.external.command.client_command import ClientCommandBase
@@ -11,7 +12,7 @@ if TYPE_CHECKING:
 class ClientNodeJS(ClientExternal):
     """NodeJS RHEA client"""
 
-    supported_protocols: list = ["AMQP10"]
+    supported_protocols: List[Protocol] = [Protocol.AMQP10]
     implementation: str = 'nodejs'
     version: str = '1.0.1'
 
