@@ -1,17 +1,25 @@
-from iqa.components.clients.external.python.command.python_commands import (
+from typing import TYPE_CHECKING
+
+from iqa.components.implementations.clients.external.python.client import ClientPython
+from iqa.components.implementations.clients.external.python.command.python_commands import (
     PythonConnectorClientCommand,
 )
-from iqa.system.node.node import Node
-from .client import ClientPython
+
+if TYPE_CHECKING:
+    from os import PathLike
+    from typing import Optional, Any
+    from iqa.system.node.base.node import Node
 
 
 class ConnectorPython(ClientPython):
     """External Python-Proton connector client."""
 
     _command: PythonConnectorClientCommand
+    path_to_exec: Optional[PathLike[Any]]
 
-    def __init__(self, name: str, node: Node, **kwargs) -> None:
+    def __init__(self, name: str, node: Node, path_to_exec: Optional[PathLike[Any]] = None, **kwargs) -> None:
         super(ConnectorPython, self).__init__(name, node, **kwargs)
+        self.path_to_exec = path_to_exec
 
     def _set_url(self, url: str) -> None:
         self._command.control.broker_url = url

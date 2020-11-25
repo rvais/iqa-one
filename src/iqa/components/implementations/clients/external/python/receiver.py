@@ -1,18 +1,26 @@
+from typing import TYPE_CHECKING
+
 from iqa.abstract.client.receiver import Receiver
-from iqa.components.clients.external.python.command.python_commands import (
+from iqa.components.implementations.clients.external.python.client import ClientPython
+from iqa.components.implementations.clients.external.python.command.python_commands import (
     PythonReceiverClientCommand,
 )
-from iqa.system.node.node import Node
-from .client import ClientPython
+
+if TYPE_CHECKING:
+    from os import PathLike
+    from typing import Optional, Any
+    from iqa.system.node.base.node import Node
 
 
 class ReceiverPython(ClientPython, Receiver):
     """External Python-Proton receiver client."""
 
     _command: PythonReceiverClientCommand
+    path_to_exec: Optional[PathLike[Any]]
 
-    def __init__(self, name: str, node: Node, **kwargs) -> None:
+    def __init__(self, name: str, node: Node, path_to_exec: Optional[PathLike[Any]] = None, **kwargs) -> None:
         super(ReceiverPython, self).__init__(name, node, **kwargs)
+        self.path_to_exec = path_to_exec
 
     def _set_url(self, url: str) -> None:
         self._command.control.broker_url = url

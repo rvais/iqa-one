@@ -1,11 +1,17 @@
+from typing import TYPE_CHECKING
+
 from iqa.abstract.client.sender import Sender
-from iqa.abstract.message.message import Message
-from iqa.components.clients.external.command.client_command import ClientCommandBase
-from iqa.components.clients.external.python.client import ClientPython
-from iqa.components.clients.external.python.command.python_commands import (
+from iqa.components.implementations.clients.external.command.client_command import ClientCommandBase
+from iqa.components.implementations.clients.external.python.client import ClientPython
+from iqa.components.implementations.clients.external.python.command.python_commands import (
     PythonSenderClientCommand,
 )
-from iqa.system.node.node import Node
+
+if TYPE_CHECKING:
+    from os import PathLike
+    from typing import Optional, Any
+    from iqa.system.node.base.node import Node
+    from iqa.abstract.message.message import Message
 
 
 class SenderPython(ClientPython, Sender):
@@ -13,9 +19,11 @@ class SenderPython(ClientPython, Sender):
 
     # Just to enforce implementation being used
     _command: PythonSenderClientCommand
+    path_to_exec: Optional[PathLike[Any]]
 
-    def __init__(self, name: str, node: Node, **kwargs) -> None:
+    def __init__(self, name: str, node: Node, path_to_exec: Optional[PathLike[Any]] = None, **kwargs) -> None:
         super(SenderPython, self).__init__(name, node, **kwargs)
+        self.path_to_exec = path_to_exec
 
     def _set_url(self, url: str) -> None:
         self._command.control.broker_url = url
