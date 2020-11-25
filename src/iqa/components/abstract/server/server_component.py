@@ -1,9 +1,15 @@
-from iqa.abstract.listener import Listener
+from abc import abstractmethod
+from typing import TYPE_CHECKING
+
 from iqa.components.abstract.component import Component
-from iqa.components.abstract.configuration import Configuration
-from iqa.components.abstract.management.client import ManagementClient
-from iqa.system.node.node import Node
-from iqa.system.service.service import Service
+
+if TYPE_CHECKING:
+    from typing import Optional, List
+    from iqa.abstract.listener import Listener
+    from iqa.system.node.base.node import Node
+    from iqa.system.service.base.service import Service
+    from iqa.components.abstract.management.client import ManagementClient
+    from iqa.components.abstract.configuration import Configuration
 
 
 class ServerComponent(Component):
@@ -15,20 +21,31 @@ class ServerComponent(Component):
         self,
         name: str,
         node: Node,
-        listeners: list or None,
-        configuration: Configuration or None = None,
+        service: Optional[Service] = None,
+        listeners: Optional[List[Listener]] = None,
+        configuration: Optional[Configuration] = None,
         **kwargs
     ) -> None:
         super(ServerComponent, self).__init__(name, node)
-        self.service: Service = kwargs.get('service')  # type: ignore
         self.name: str = name
         self.node: Node = node
-        self.configuration: Configuration or None = configuration
-        self.listeners: list or None = listeners
-        self.management_client: ManagementClient = self.get_management_client()
+        self.service: Optional[Service] = service
+        self.configuration: Optional[Configuration] = configuration
+        self.listeners: List[Listener] = listeners if listeners is not None else []
+
+    @abstractmethod
+    def _get_management_client(self) -> ManagementClient:
+        raise NotImplemented
 
     def get_management_client(self) -> ManagementClient:
-        raise NotImplementedError
+        client = getattr(self, "_management_client", None)
+        if client is None:
+            return self._get_management_client()
+        return client
+
+    @property
+    def management_client(self) -> ManagementClient:
+        return self.get_management_client()
 
     @property
     def implementation(self):
