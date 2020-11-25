@@ -15,4 +15,4 @@ class Router(MessagingServer):
         return NotImplemented
 
     def __init__(self, **kwargs) -> None:
-        super(Router, self).__init__()
+        super(Router, self).__init__(**kwargs)
