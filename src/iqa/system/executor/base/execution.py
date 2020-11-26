@@ -71,13 +71,17 @@ class ExecutionBase(ABC):
         if command.timeout and command.timeout > 0:
             self._timeout = TimeoutCallback(command.timeout, self._on_timeout)
 
+        self.args: List[str] = []
+        if self.command.path_to_exec is not None:
+            self.args.append(self.command.path_to_exec)
+
         # Avoid unwanted modification of the command's arguments by executors
-        self.args: List[str] = self.command.args
         if modified_args:
-            self.args = modified_args
+            self.args.extend(modified_args)
+        else:
+            self.args.extend(self.command.args)
 
         self._logger: logging.Logger = logger
-
         self._logger.debug('Executing: %s' % self.args)
 
     @property
