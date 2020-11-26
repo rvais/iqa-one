@@ -5,7 +5,7 @@ from iqa.system.executor.base.executor import ExecutorBase
 from iqa.system.executor.localhost.execution_local import ExecutionProcess
 
 if TYPE_CHECKING:
-    from typing import Optional
+    from typing import Optional, Type
     from iqa.system.command.command_base import CommandBase
 """
 Executor implementation that uses the "ansible" CLI to
@@ -26,8 +26,10 @@ class ExecutorAnsible(ExecutorBase):
         ansible_host: Optional[str] = None,
         inventory: Optional[str] = None,
         ansible_user: Optional[str] = None,
+        ansible_connection: str = 'ssh',
         module: str = 'raw',
-        name: str = 'ExecutorAnsible',
+        executor_name: str = 'ExecutorAnsible',
+        docker_host: Optional[str] = None,
         **kwargs
     ) -> None:
         """
@@ -42,22 +44,21 @@ class ExecutorAnsible(ExecutorBase):
         :param name:
         :param kwargs:
         """
-        super(ExecutorAnsible, self).__init__()
-        self.inventory: str = kwargs.get('inventory_file', inventory)
-        self.ansible_host: str = kwargs.get(
-            'ansible_host', ansible_host
-        ) if not self.inventory else kwargs.get('inventory_hostname', ansible_host)
-        self.ansible_user: str = kwargs.get('ansible_user', ansible_user)
-        self.ansible_connection: str = kwargs.get('ansible_connection', 'ssh')
-        self.module: str = kwargs.get('executor_module', module)
-        self.name: str = kwargs.get('executor_name', name)
-        self.docker_host: str = kwargs.get('executor_docker_host', None)
+        super(ExecutorAnsible, self).__init__(**kwargs)
+        self.ansible_host: Optional[str] = ansible_host
+        self.inventory: Optional[str] = inventory
+        self.ansible_user: str = ansible_user
+        self.ansible_connection: str = ansible_connection
+        self.module: str = module
+        self.name: str = executor_name
+        self.docker_host: str = docker_host
 
     def _execute(self, command: CommandBase) -> ExecutionProcess:
+        command = CommandBaseAnsible.convert(command, ansible_module=self.module)
 
-        ansible_args: list = ['ansible']
-
+        ansible_args: list = []
         if self.ansible_user is not None:
+            self._logger.debug('Ansible user: %s' % self.inventory)
             ansible_args += ['-u', self.ansible_user]
 
         if self.inventory is not None:
@@ -67,15 +68,9 @@ class ExecutorAnsible(ExecutorBase):
             self._logger.debug('Using inventory host: %s' % self.ansible_host)
             ansible_args += ['-i', '%s,' % self.ansible_host]
 
-        # Executing using the "raw" module
-        module: str = self.module
-
-        # If given command is an instance of CommandAnsible
-        # the module is read from it
-        if isinstance(command, CommandBaseAnsible):
-            self._logger.debug('Using Ansible module: %s' % command.ansible_module)
-            module = command.ansible_module
-        ansible_args += ['-m', module, '-a']
+        self._logger.debug('Using Ansible module: %s' % command.ansible_module)
+        ansible_args += ['-m', command.ansible_module, '-a']
+        ansible_args.extend(command.ansible_args)
 
         # Appending command as a literal string
         ansible_args.append('%s' % ' '.join(command.args))
@@ -85,3 +80,7 @@ class ExecutorAnsible(ExecutorBase):
 
         # Set new args
         return ExecutionProcess(command, executor=self, modified_args=ansible_args)
+
+    @staticmethod
+    def get_preferred_command_base() -> Type[CommandBase]:
+        return CommandBaseAnsible
