@@ -1,6 +1,6 @@
 from inspect import signature
 
-from iqa.system.node.node import Node
+from iqa.system.node.base.node import Node
 
 
 class Component:
