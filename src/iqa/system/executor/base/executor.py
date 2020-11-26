@@ -1,12 +1,12 @@
 import logging
 from abc import ABC, abstractmethod
-
 from typing import TYPE_CHECKING
 
+from iqa.system.command.command_base import CommandBase
+
 if TYPE_CHECKING:
-    from typing import List
+    from typing import List, Type
     from iqa.system.executor.base.execution import ExecutionBase
-    from iqa.system.command.command_base import CommandBase
 
 from iqa.logger import logger
 
@@ -58,3 +58,7 @@ class ExecutorBase(ABC):
         :return:
         """
         raise NotImplementedError
+
+    @staticmethod
+    def get_preferred_command_base() -> Type[CommandBase]:
+        return CommandBase
