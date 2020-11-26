@@ -6,7 +6,7 @@ ExecutorBase instances.
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Optional, List, Callable, Any
+    from typing import Optional, List, Callable, Any, Union, Dict
     from os import PathLike
     from iqa.system.executor.base.execution import ExecutionBase
     from iqa.system.executor.base.executor import ExecutorBase
@@ -20,14 +20,16 @@ class CommandBase:
 
     def __init__(
             self,
-            args: List[str],
-            path_to_exec: Optional[PathLike[Any]] = None,
+            args: Optional[List[str]] = None,
+            path_to_exec: Optional[Union[str, bytes, PathLike]] = None,
             stdout: bool = True,
             stderr: bool = True,
+            daemon: bool = False,
             timeout: int = 0,
             encoding: str = 'utf-8',
             wait_for: bool = False,
-            env: Optional[dict] = None
+            env: Optional[Dict[str, Any]] = None,
+            **kwargs: Dict[str, Any]
     ) -> None:
         """
         Creates an instance of a Command representation that can be passed to
@@ -45,10 +47,11 @@ class CommandBase:
         :param encoding: Encoding when reading stdout and stderr.
         """
 
-        self._args: List[str] = args
-        self._path_to_exec: Optional[PathLike[Any]] = path_to_exec
+        self._args: List[str] = args if args is not None else []
+        self._path_to_exec: Optional[Union[str, bytes, PathLike]] = path_to_exec
         self.stdout: bool = stdout
         self.stderr: bool = stderr
+        self.damon: bool = daemon
         self.timeout: int = timeout
         self.encoding: str = encoding
         self.wait_for: bool = wait_for
@@ -71,14 +74,17 @@ class CommandBase:
         self._args = args
 
     @property
-    def path_to_exec(self) -> PathLike[Any]:
+    def path_to_exec(self) -> Optional[Union[str, bytes, PathLike]]:
         return self._path_to_exec
 
     @path_to_exec.setter
-    def path_to_exec(self, path_to_exec: PathLike[Any]) -> None:
+    def path_to_exec(self, path_to_exec: Optional[Union[str, bytes, PathLike]]) -> None:
         self._path_to_exec = path_to_exec
 
     def __str__(self):
+        if self.path_to_exec is not None:
+            return " ".join([self.path_to_exec, " ".join(self.args)])
+
         return " ".join(self.args)
 
     def add_timeout_callback(self, callback_method: Callable) -> None:
