@@ -1,17 +1,23 @@
 import logging
 import posixpath
-from typing import Optional, Union
+from typing import TYPE_CHECKING
 
-from amqcfg import amqcfg
+# from amqcfg import amqcfg
+from yacfg import yacfg
+
+
+from iqa.components.implementations.brokers.broker_config import BrokerConfiguration
+from iqa.system.service.artemis.service_artemis import ServiceFakeArtemis
 
 from iqa.abstract.user import User
-from iqa.components.abstract.server.server_component import ServerComponent
-from iqa.components.brokers.broker_config import BrokerConfiguration
-from iqa.system.executor import ExecutorBase
-from iqa.system.executor import ExecutionBase
-from iqa.system.service import ServiceFakeArtemis
 from iqa.utils.exceptions import IQAConfigurationException
 from iqa.utils.utils import remove_prefix
+
+if TYPE_CHECKING:
+    from typing import Optional, Union
+    from iqa.components.abstract.server.server_component import ServerComponent
+    from iqa.system.executor.base.executor import ExecutorBase
+    from iqa.system.executor.base.execution import ExecutionBase
 
 
 class ArtemisConfig(BrokerConfiguration):
@@ -182,10 +188,13 @@ class ArtemisConfig(BrokerConfiguration):
 
         try:
             # Todo hacky way to turn off debug logging from amqcfg module
-            amqcfg.LOG.setLevel(logging.WARN)
+            # amqcfg.LOG.setLevel(logging.WARN)
+            yacfg.LOG.setLevel(logging.WARN)
             if self.LOGGER.level != logging.DEBUG:
-                amqcfg.LOG.setLevel(logging.WARN)
-            amqcfg.generate(
+                # amqcfg.LOG.setLevel(logging.WARN)
+                yacfg.LOG.setLevel(logging.WARN)
+            # amqcfg.generate(
+            yacfg.generate(
                 profile=yaml_configuration_path,
                 output_path=self.local_config_dir,
                 write_profile_data=True,
