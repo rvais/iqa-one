@@ -39,7 +39,7 @@ class ExecutionProcess(ExecutionBase):
         """
         # Initializes the super class which will invoke the run method
         super(ExecutionProcess, self).__init__(
-            command=command,executor=executor, modified_args=modified_args, env=env
+            command=command, executor=executor, modified_args=modified_args, env=env
         )
 
         if command.stdout:
