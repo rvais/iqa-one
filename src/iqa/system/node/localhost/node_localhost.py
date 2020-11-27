@@ -44,7 +44,7 @@ class NodeLocal(Node):
             return False
         cmd_ping.args = ['ping', '-c', '1', self.get_ip()]
 
-        execution: ExecutionBase = self.executor.execute(cmd_ping)
+        execution: ExecutionBase = await self.executor.execute(cmd_ping)
 
         # True if completed with exit code 0 and stdout has some data
         return execution.completed_successfully() and bool(execution.read_stdout())
