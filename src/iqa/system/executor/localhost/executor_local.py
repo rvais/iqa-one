@@ -1,9 +1,10 @@
 from iqa.system.executor.base.executor import ExecutorBase
-from iqa.system.executor.base.execution import ExecutionBase
+from iqa.system.executor.localhost.execution_local import ExecutionProcess
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from iqa.system.command.command_base import CommandBase
+    from iqa.system.executor.base.execution import ExecutionBase
 
 
 """
@@ -24,5 +25,5 @@ class ExecutorLocal(ExecutorBase):
         self.name: str = name
 
     async def _execute(self, command: CommandBase) -> ExecutionBase:
-        ex = ExecutionBase(command)
+        ex = ExecutionProcess(command)
         return ex
