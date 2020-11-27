@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 class ExecutorAsyncio(ExecutorBase):
     """ Executor implementation for localhost AsyncIO executions
     """
-    implementation: str = "async"
+    implementation: str = "async local"
     name: str = 'Executor class for asynchronous localhost execution'
 
     def __init__(self, user: str = 'root', password: Optional[str] = None, **kwargs) -> None:
