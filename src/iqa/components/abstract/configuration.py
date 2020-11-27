@@ -6,11 +6,7 @@ import posixpath
 import dpath.util
 import yaml
 
-from iqa.system.command.command_ansible import CommandBaseAnsible
 from iqa.system.command.command_base import CommandBase
-from iqa.system.node.ansible.node_ansible import NodeAnsible
-from iqa.system.node.localhost.node_localhost import NodeLocal
-from iqa.system.node.docker.node_docker import NodeDocker
 from iqa.utils.exceptions import IQAConfigurationException
 
 from typing import TYPE_CHECKING
@@ -18,6 +14,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import Union, Optional, List, Any
     from iqa.system.executor.base.execution import ExecutionBase
+    from iqa.system.executor.base.executor import ExecutorBase
     from iqa.components.abstract.component import Component
     from os import PathLike
 
@@ -128,21 +125,33 @@ class Configuration(object):
         self.apply_config(self.original_config_file)
 
     def copy_configuration_files(self) -> ExecutionBase:
-        cmd_copy_files: CommandBase = CommandBase(args=[])
-        if isinstance(self.component.node, NodeAnsible):
-            cmd_copy_files = CommandBaseAnsible(
-                ansible_module='synchronize',
-                ansible_args='src=%s dest=%s'
-                % (self.local_config_dir, self.node_config_dir),
-                stdout=True,
-                stderr=True,
-                timeout=20,
-            )
-        elif isinstance(self.component.node, NodeLocal):
-            cmd_copy_files = CommandBase([], stdout=True, timeout=20)
-        elif isinstance(self.component.node, NodeDocker):
-            raise IQAConfigurationException(
-                'Unable to change configuration on docker node'
-            )
+        executor: ExecutorBase = self.component.node.executor
+        args = []
+        stdout = True
+        stderr = True
+        timeout = 20
+        ansible_module = None
+        ansible_args = []
+        path_to_exec = None
 
-        return self.component.node.execute(cmd_copy_files)
+        if executor.implementation.__contains__('ansible'):
+            ansible_module='synchronize'
+            ansible_args = [
+                'src=%s' % self.local_config_dir,
+                'dest=%s' % self.node_config_dir
+            ]
+        elif executor.implementation.__contains__("local"):
+            path_to_exec = 'cp'
+            args = ['-T', self.local_config_dir, self.node_config_dir]
+        else:
+            raise \
+                NotImplemented("Synchronizing configuration files is not implemented for %s executor." % executor.name)
+
+        # dump local variables into dictionary
+        inputs = locals()
+        # remove self and executor variables as they would mess things up
+        del inputs['self']
+        del inputs['executor']
+
+        cmd: CommandBase = executor.get_preferred_command_base()(**inputs)
+        return self.component.node.execute(cmd)
