@@ -29,7 +29,7 @@ class CommandBase:
             encoding: str = 'utf-8',
             wait_for: bool = False,
             env: Optional[Dict[str, Any]] = None,
-            **kwargs: Dict[str, Any]
+            **kwargs
     ) -> None:
         """
         Creates an instance of a Command representation that can be passed to
@@ -67,7 +67,7 @@ class CommandBase:
 
     @property
     def args(self) -> List[str]:
-        return self._args
+        return self._args.copy()
 
     @args.setter
     def args(self, args: List[str]) -> None:
