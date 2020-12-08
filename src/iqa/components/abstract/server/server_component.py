@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from iqa.system.node.base.node import Node
     from iqa.system.service.base.service import Service
     from iqa.components.abstract.management.client import ManagementClient
-    from iqa.components.abstract.configuration import Configuration
+    from iqa.components.abstract.new_configuration import Configuration
 
 
 class ServerComponent(Component):
@@ -27,9 +27,7 @@ class ServerComponent(Component):
         **kwargs
     ) -> None:
         super(ServerComponent, self).__init__(name, node)
-        self.name: str = name
-        self.node: Node = node
-        self.service: Optional[Service] = service
+        self._service: Optional[Service] = service
         self.configuration: Optional[Configuration] = configuration
         self.listeners: List[Listener] = listeners if listeners is not None else []
 
@@ -50,3 +48,7 @@ class ServerComponent(Component):
     @property
     def implementation(self):
         raise NotImplementedError
+
+    @property
+    def service(self) -> Optional[Service]:
+        return self._service
