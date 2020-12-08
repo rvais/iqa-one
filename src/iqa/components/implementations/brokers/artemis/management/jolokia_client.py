@@ -5,10 +5,13 @@ Generic client for communicating with Jolokia API through POST requests.
 import copy
 import json
 import logging
-from typing import Optional
+from typing import TYPE_CHECKING
 
 import requests
 from requests import RequestException
+
+if TYPE_CHECKING:
+    from typing import Optional
 
 
 class ArtemisJolokiaClientResult(Exception):
