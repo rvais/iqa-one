@@ -52,6 +52,14 @@ class CommandBaseAnsible(CommandBase):
     def ansible_args(self, args: List[str]) -> None:
         self._ansible_args = args
 
+    def __str__(self):
+        if self.path_to_exec is not None:
+            return " ".join(
+                [self.path_to_exec, "-m", self.ansible_module, " ".join(self._ansible_args), " ".join(self.args)]
+            )
+
+        return " ".join(self.args)
+
     @staticmethod
     def convert(
             c: CommandBase,
