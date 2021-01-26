@@ -45,7 +45,7 @@ class TimeoutCallback(threading.Thread):
     """
 
     def __init__(
-        self, timeout: float, callback_method: Union[Callable, List[Callable]] = None
+        self, timeout: float, callback_method: 'Union[Callable, List[Callable]]' = None
     ):
         """
         Timeout must be provided in seconds and callback_method can be either

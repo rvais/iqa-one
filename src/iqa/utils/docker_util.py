@@ -22,13 +22,13 @@ CONTAINER_STATUS_RUNNING: str = 'running'
 CONTAINER_STATUS_EXITED: str = 'exited'
 
 
-def get_client(docker_host: Optional[str] = None):
+def get_client(docker_host: 'Optional[str]' = None):
     if docker_host:
         _env['DOCKER_HOST'] = docker_host
     return docker.from_env(environment=_env)
 
 
-def get_container(name: str, docker_host: Optional[str] = None) -> Container:
+def get_container(name: str, docker_host: 'Optional[str]' = None) -> 'Container':
     """
     Returns the container instance for the given name.
     A docker.errors.NotFound exception is raised in case the given
@@ -43,7 +43,7 @@ def get_container(name: str, docker_host: Optional[str] = None) -> Container:
     return container
 
 
-def get_container_ip(container: Container, network_name: Optional[str] = None) -> str:
+def get_container_ip(container: 'Container', network_name: 'Optional[str]' = None) -> str:
     """
     Returns the IPAddress assigned to the given container name (on the given network).
     :param container:

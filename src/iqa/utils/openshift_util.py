@@ -37,7 +37,7 @@ class OpenShiftUtil:
 
     TIMEOUT: int = 30
 
-    def __init__(self, executor: ExecutorBase, url: str, token: str) -> None:
+    def __init__(self, executor: 'ExecutorBase', url: str, token: str) -> None:
         self._logger: logging.Logger = logging.getLogger(self.__class__.__module__)
         self.executor: ExecutorBase = executor
         self.url: str = url
@@ -57,7 +57,7 @@ class OpenShiftUtil:
 
         return wrap
 
-    def login(self, timeout=TIMEOUT) -> ExecutionBase:
+    def login(self, timeout=TIMEOUT) -> 'ExecutionBase':
         """
         Log in to the defined OpenShift URL using the related token.
         It waits for a max of "timeout" seconds before timing out.
@@ -86,7 +86,7 @@ class OpenShiftUtil:
         return execution
 
     @login_first
-    def scale(self, replicas: int, deployment: str) -> ExecutionBase:
+    def scale(self, replicas: int, deployment: str) -> 'ExecutionBase':
         """
         Perform oc scale, setting the number of replicas provided for the given deployment name.
         It enforces that the "oc login" is executed first.
