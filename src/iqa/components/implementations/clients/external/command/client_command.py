@@ -39,30 +39,29 @@ class ClientCommandBase(CommandBase):
     def __init__(
         self,
         args: list,
-        path_to_exec: Optional[PathLike[Any]] = None,
+        path_to_exec: 'Optional[PathLike[Any]]' = None,
         stdout: bool = True,
         stderr: bool = True,
         daemon: bool = False,
         timeout: int = 0,
         encoding: str = 'utf-8',
     ) -> None:
-        super().__init__(args, path_to_exec, stdout, stderr,  timeout, encoding)
+        super(ClientCommandBase).__init__(args, path_to_exec, stdout, stderr, daemon, timeout, encoding)
         self.control: Optional[ControlOptionsCommon] = None
         self.logging: Optional[LoggingOptionsCommon] = None
-        self.daemon = daemon
 
     @property  # type: ignore
-    def args(self) -> List[str]:
+    def args(self) -> 'List[str]':
         return self._build_command()
 
-    def main_command(self) -> List[str]:
+    def main_command(self) -> 'List[str]':
         """
         List of arguments needed to run the client implementation.
         :return:
         """
-        return NotImplemented
+        raise NotImplemented
 
-    def _build_command(self) -> List[str]:
+    def _build_command(self) -> 'List[str]':
         """
         Builds the external client command based on all
         ClientOptionsBase properties available on implementing class,
@@ -98,12 +97,12 @@ class ConnectorClientCommand(ClientCommandBase):
     Abstract implementation of common Connector client options.
     """
 
-    def main_command(self) -> List[str]:
-        return NotImplemented
+    def main_command(self) -> 'List[str]':
+        raise NotImplemented
 
     def __init__(
         self,
-        path_to_exec: Optional[PathLike[Any]] = None,
+        path_to_exec: 'Optional[PathLike[Any]]' = None,
         stdout: bool = False,
         stderr: bool = False,
         daemon: bool = False,
@@ -124,12 +123,12 @@ class ReceiverClientCommand(ClientCommandBase):
     Abstract implementation of common Receiver client options.
     """
 
-    def main_command(self) -> List[str]:
-        return NotImplemented
+    def main_command(self) -> 'List[str]':
+        raise NotImplemented
 
     def __init__(
         self,
-        path_to_exec: Optional[PathLike[Any]] = None,
+        path_to_exec: 'Optional[PathLike[Any]]' = None,
         stdout: bool = False,
         stderr: bool = False,
         daemon: bool = False,
@@ -151,12 +150,12 @@ class SenderClientCommand(ClientCommandBase):
         Abstract implementation of common Sender client options.
     """
 
-    def main_command(self) -> List[str]:
-        pass
+    def main_command(self) -> 'List[str]':
+        raise NotImplemented
 
     def __init__(
         self,
-        path_to_exec: Optional[PathLike[Any]] = None,
+        path_to_exec: 'Optional[PathLike[Any]]' = None,
         stdout: bool = False,
         stderr: bool = False,
         daemon: bool = False,
