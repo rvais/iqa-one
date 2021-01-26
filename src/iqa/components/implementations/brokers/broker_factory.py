@@ -1,27 +1,41 @@
+from iqa.utils.walk_package import walk_package_and_import
+from iqa.components.implementations.component_factory import SpecificComponentFactory
 from iqa.abstract.server.broker import Broker
-from iqa.system.executor.executor import ExecutorBase
-from iqa.system.node.node import Node
-from iqa.system.service.service import Service
+from iqa.components.implementations.brokers import __package__
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import List, Type
+    from iqa.components.abstract.component import Component
+    from iqa.system.node.base.node import Node
 
 
-class BrokerFactory(object):
+class BrokerFactory(SpecificComponentFactory):
+    __broker_implementations: 'List[Type[Broker]]' = walk_package_and_import(__package__, Broker)
+    __type: 'Type[Component]' = Broker
+
+    @classmethod
+    def get_type(cls) -> 'Type[Component]':
+        return cls.__type
+
     @staticmethod
-    def create_broker(
-        implementation: str,
-        node: Node,
-        executor: ExecutorBase,
-        service_impl: Service,
-        **kwargs
-    ):
+    def get_broker_implementations() -> 'List[Type[Broker]]':
+        return BrokerFactory.__broker_implementations.copy()
 
-        for broker in Broker.__subclasses__():
+    @staticmethod
+    def create_component(
+        implementation: str,
+        node: 'Node',
+        **kwargs
+    ) -> 'Broker':
+        for broker in BrokerFactory.get_broker_implementations():
 
             # Ignore broker with different implementation
             if broker.implementation != implementation:
                 continue
 
             name: str = '%s-%s-%s' % ('broker', broker.__name__, node.hostname)
-
-            return broker(name=name, node=node, service=service_impl, **kwargs)  # type: ignore
+            return broker(name=name, node=node, **kwargs)  # type: ignore
 
         raise ValueError('Invalid broker implementation: %s' % implementation)
