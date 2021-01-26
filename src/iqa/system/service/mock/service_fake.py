@@ -16,7 +16,7 @@ class ServiceFake(Service):
 
     TIMEOUT: int = 30
 
-    def __init__(self, executor: ExecutorBase, name: str, **kwargs) -> None:
+    def __init__(self, executor: 'ExecutorBase', name: str, **kwargs) -> None:
         super().__init__(executor, name, **kwargs)
 
     @abc.abstractmethod
@@ -29,21 +29,21 @@ class ServiceFake(Service):
         return NotImplemented
 
     @abc.abstractmethod
-    def start(self, wait_for_messaging: bool = False) -> ExecutionBase:
+    def start(self, wait_for_messaging: bool = False) -> 'ExecutionBase':
         return NotImplemented
 
     @abc.abstractmethod
-    def stop(self) -> ExecutionBase:
+    def stop(self) -> 'ExecutionBase':
         return NotImplemented
 
     @abc.abstractmethod
-    def restart(self, wait_for_messaging: bool = False) -> ExecutionBase:
+    def restart(self, wait_for_messaging: bool = False) -> 'ExecutionBase':
         return NotImplemented
 
     @abc.abstractmethod
-    def enable(self) -> ExecutionBase:
+    def enable(self) -> 'ExecutionBase':
         return NotImplemented
 
     @abc.abstractmethod
-    def disable(self) -> ExecutionBase:
+    def disable(self) -> 'ExecutionBase':
         return NotImplemented

@@ -22,7 +22,7 @@ class ServiceDocker(Service):
 
     _logger: logging.Logger = logging.getLogger(__name__)
 
-    def __init__(self, executor: ExecutorDocker, name: str, **kwargs) -> None:
+    def __init__(self, executor: 'ExecutorDocker', name: str, **kwargs) -> None:
         super().__init__(executor, name, **kwargs)
         self.docker_host: Optional[str] = executor.docker_host
         self.container = get_container(name=self.name)
@@ -66,23 +66,23 @@ class ServiceDocker(Service):
 
         return ServiceStatus.UNKNOWN
 
-    async def start(self) -> ExecutionBase:
+    async def start(self) -> 'ExecutionBase':
         return self.container.start()
 
-    async def stop(self) -> ExecutionBase:
+    async def stop(self) -> 'ExecutionBase':
         return self.container.stop()
 
-    async def restart(self) -> ExecutionBase:
+    async def restart(self) -> 'ExecutionBase':
         return self.container.restart()
 
-    def enable(self) -> Optional[ExecutionBase]:
+    def enable(self) -> 'Optional[ExecutionBase]':
         """
         Simply ignore it (not applicable to containers)
         :return:
         """
         return None
 
-    def disable(self) -> Optional[ExecutionBase]:
+    def disable(self) -> 'Optional[ExecutionBase]':
         """
         Simply ignore it (not applicable to containers)
         :return:

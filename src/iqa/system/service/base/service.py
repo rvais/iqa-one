@@ -23,7 +23,7 @@ class Service(ABC):
 
     TIMEOUT: int = 30
 
-    def __init__(self, executor: ExecutorBase, name: Optional[str] = None, **kwargs) -> None:
+    def __init__(self, executor: 'ExecutorBase', name: 'Optional[str]' = None, **kwargs) -> None:
         self.name: str = name if name is not None else self.__name__
         self.executor: ExecutorBase = executor
 
@@ -37,21 +37,21 @@ class Service(ABC):
         return NotImplemented
 
     @abstractmethod
-    def start(self) -> ExecutionBase:
+    def start(self) -> 'ExecutionBase':
         return NotImplemented
 
     @abstractmethod
-    def stop(self) -> ExecutionBase:
+    def stop(self) -> 'ExecutionBase':
         return NotImplemented
 
     @abstractmethod
-    def restart(self) -> ExecutionBase:
+    def restart(self) -> 'ExecutionBase':
         return NotImplemented
 
     @abstractmethod
-    def enable(self) -> Optional[ExecutionBase]:
+    def enable(self) -> 'Optional[ExecutionBase]':
         return NotImplemented
 
     @abstractmethod
-    def disable(self) -> Optional[ExecutionBase]:
+    def disable(self) -> 'Optional[ExecutionBase]':
         return NotImplemented

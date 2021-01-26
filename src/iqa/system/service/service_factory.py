@@ -5,6 +5,7 @@ from iqa.system.command.command_base import CommandBase
 from iqa.system.service.base.service import Service
 from iqa.system.service.system_d.service_systemd import ServiceSystemD
 from iqa.system.service.system_init.service_system_init import ServiceSystemInit
+from iqa.system.service import __package__
 from iqa.utils.walk_package import walk_package_and_import
 
 if TYPE_CHECKING:
@@ -26,12 +27,12 @@ class ServiceFactory(object):
     """
 
     _logger: logging.Logger = logging.getLogger(__name__)
-    __known_implementations: List[Type[Service]] = walk_package_and_import(__path__, Service)
+    __known_implementations: 'List[Type[Service]]' = walk_package_and_import(__package__, Service)
 
     @staticmethod
     def create_service(
-            executor: ExecutorBase,
-            service_name: Optional[str] = None,
+            executor: 'ExecutorBase',
+            service_name: 'Optional[str]' = None,
             **kwargs
     ) -> Service:
         srv: Optional[Service] = None
@@ -46,7 +47,7 @@ class ServiceFactory(object):
             # If service instance haven't been created yet, try to get one with systemD or SystemInit
             if srv is None:
                 # Check if systemD is available
-                svc_cmd_exec: ExecutionBase = await executor.execute(
+                svc_cmd_exec: ExecutionBase = executor.execute(
                     CommandBase(['pidof', 'systemd'], stdout=True, timeout=30)
                 )
                 if svc_cmd_exec.completed_successfully():

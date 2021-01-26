@@ -22,7 +22,7 @@ class ServiceSystemD(Service):
 
     _logger: logging.Logger = logging.getLogger(__name__)
 
-    def __init__(self, executor: ExecutorBase, name: str, **kwargs) -> None:
+    def __init__(self, executor: 'ExecutorBase', name: str, **kwargs) -> None:
         super().__init__(executor, name, **kwargs)
 
     class ServiceSystemState(Enum):
@@ -56,7 +56,7 @@ class ServiceSystemD(Service):
             stdout=True,
             timeout=self.TIMEOUT,
         )
-        execution: ExecutionBase = await self.executor.execute(cmd_status)
+        execution: ExecutionBase = self.executor.execute(cmd_status)
 
         service_output: Optional[Union[list, str]] = execution.read_stdout()
 
@@ -76,28 +76,28 @@ class ServiceSystemD(Service):
         ServiceSystemD._logger.debug('Service: %s - Status: UNKNOWN' % self.name)
         return ServiceStatus.UNKNOWN
 
-    def start(self) -> ExecutionBase:
-        return await self.executor.execute(
+    def start(self) -> 'ExecutionBase':
+        return self.executor.execute(
             self._create_command(self.ServiceSystemState.STARTED)
         )
 
-    def stop(self) -> ExecutionBase:
-        return await self.executor.execute(
+    def stop(self) -> 'ExecutionBase':
+        return self.executor.execute(
             self._create_command(self.ServiceSystemState.STOPPED)
         )
 
-    def restart(self) -> ExecutionBase:
-        return await self.executor.execute(
+    def restart(self) -> 'ExecutionBase':
+        return self.executor.execute(
             self._create_command(self.ServiceSystemState.RESTARTED)
         )
 
-    def enable(self) -> ExecutionBase:
-        return await self.executor.execute(
+    def enable(self) -> 'ExecutionBase':
+        return self.executor.execute(
             self._create_command(self.ServiceSystemState.ENABLED)
         )
 
-    def disable(self) -> ExecutionBase:
-        return await self.executor.execute(
+    def disable(self) -> 'ExecutionBase':
+        return self.executor.execute(
             self._create_command(self.ServiceSystemState.DISABLED)
         )
 
