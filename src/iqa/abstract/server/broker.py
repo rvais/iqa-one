@@ -19,13 +19,13 @@ class Broker(MessagingServer):
     Abstract broker class
     """
 
-    supported_protocols: List[Protocol] = []
+    supported_protocols: 'List[Protocol]' = []
 
     def __init__(
         self,
-        broker_name: Optional[str] = None,
-        broker_path: Optional[PathLike[Any]] = None,
-        broker_web_port: Union[str, int] = 8161,
+        broker_name: 'Optional[str]' = None,
+        broker_path: 'Optional[PathLike[Any]]' = None,
+        broker_web_port: 'Union[str, int]' = 8161,
         broker_user: str = 'admin',
         broker_password: str = 'admin',
         **kwargs
@@ -49,21 +49,21 @@ class Broker(MessagingServer):
         self.cluster_member: Optional[Component] = None
         self.ha_member: Optional[Component] = None
 
-    def set_as_cluster_member(self, cluster_component: Component):
+    def set_as_cluster_member(self, cluster_component: 'Component') -> None:
         self.cluster_member = cluster_component
 
-    def set_as_ha_member(self, ha_component: Component):
+    def set_as_ha_member(self, ha_component: 'Component') -> None:
         self.ha_member = ha_component
 
     @abc.abstractmethod
-    def queues(self, refresh: bool = True) -> List[Queue]:
+    def queues(self, refresh: bool = True) -> 'List[Queue]':
         """
         Must return existing queues
         :return:
         """
 
     @abc.abstractmethod
-    def addresses(self, refresh: bool = True) -> List[Address]:
+    def addresses(self, refresh: bool = True) -> 'List[Address]':
         """
         Must return existing addresses
         :return:
