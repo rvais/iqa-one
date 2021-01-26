@@ -30,12 +30,12 @@ class Configuration(object):
     config_file: str = 'data_config_file'
     original_config_file: str
     local_config_dir: str  # local configuration directory (ansible inventory dir)
-    node_config_dir: Union[int, str, list, dict]  # remote configuration directory
-    object_list: List[Any] = []
-    yaml_data: Optional[Union[dict, yaml.YAMLObject]] = None
-    old_yaml_data: Optional[Union[dict, yaml.YAMLObject]] = None  # re|store configuration data
+    node_config_dir: 'Union[int, str, list, dict]'  # remote configuration directory
+    object_list: 'List[Any]' = []
+    yaml_data: 'Optional[Union[dict, yaml.YAMLObject]]' = None
+    old_yaml_data: 'Optional[Union[dict, yaml.YAMLObject]]' = None  # re|store configuration data
 
-    def __init__(self, component: Component, **kwargs) -> None:
+    def __init__(self, component: 'Component', **kwargs) -> None:
         self.component = component
 
         if self.config_file in kwargs.keys():
@@ -61,9 +61,9 @@ class Configuration(object):
 
     def _data_getter(
         self,
-        path: Union[str, PathLike],
-        default: Optional[Union[int, str, list, dict]]
-    ) -> Optional[Union[int, str, list, dict]]:
+        path: 'Union[str, PathLike]',
+        default: 'Optional[Union[int, str, list, dict]]'
+    ) -> 'Optional[Union[int, str, list, dict]]':
         """General function to query data from provided external data dictionary.
 
         :param path: internal path to query data (broker_xml/journal/persistence_enabled)
@@ -81,7 +81,7 @@ class Configuration(object):
             return default
         return output
 
-    def load_configuration_yaml(self, path: Union[str, PathLike]) -> None:
+    def load_configuration_yaml(self, path: 'Union[str, PathLike]') -> None:
         """Load provided configuration YAML file.
 
         :param path: path to configuration file
@@ -110,7 +110,7 @@ class Configuration(object):
         pass
 
     @abc.abstractmethod
-    def create_configuration(self, config_file_path: Union[str, PathLike]) -> None:
+    def create_configuration(self, config_file_path: 'Union[str, PathLike]') -> None:
         pass
 
     @abc.abstractmethod
@@ -124,7 +124,7 @@ class Configuration(object):
     def restore_config(self) -> None:
         self.apply_config(self.original_config_file)
 
-    def copy_configuration_files(self) -> ExecutionBase:
+    def copy_configuration_files(self) -> 'ExecutionBase':
         executor: ExecutorBase = self.component.node.executor
         args = []
         stdout = True
