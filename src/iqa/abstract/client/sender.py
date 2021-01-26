@@ -14,7 +14,7 @@ class Sender(MessagingClient):
         super(Sender, self).__init__(**kwargs)
         # Sender settings
 
-    def send(self, message: Message, **kwargs) -> None:
+    def send(self, message: 'Message', **kwargs) -> None:
         """Method for sending a message.
         :param message: Message to be sent
         :type: iqa.iqa.abstract.message.Message
@@ -26,5 +26,5 @@ class Sender(MessagingClient):
         self._send(message, **kwargs)
 
     @abstractmethod
-    def _send(self, message: Message, **kwargs) -> None:
+    def _send(self, message: 'Message', **kwargs) -> None:
         raise NotImplementedError
