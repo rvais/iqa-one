@@ -20,13 +20,10 @@ class ExecutorDocker(ExecutorBase):
     Executor that runs Command instances in a Docker container.
     """
 
-    implementation: str = 'docker'
-    name: str = 'Docker CLI executor'
-
     def __init__(
         self,
         container_name: str,
-        user: Optional[str] = None
+        user: 'Optional[str]' = None
     ):
         super(ExecutorDocker, self).__init__()
         self.container_name: str = container_name
@@ -34,7 +31,15 @@ class ExecutorDocker(ExecutorBase):
         self.docker_host: str = ''
         self._command: Optional[CommandBase] = None
 
-    def _command_inside_container(self, command: Optional[CommandBase] = None, user: Optional[str] = None):
+    @staticmethod
+    def implementation() -> str:
+        return 'docker'
+
+    @property
+    def name(self) -> str:
+        return 'Docker CLI executor'
+
+    def _command_inside_container(self, command: 'Optional[CommandBase]' = None, user: 'Optional[str]' = None):
 
         docker_args: List[str] = []
 
@@ -53,9 +58,9 @@ class ExecutorDocker(ExecutorBase):
 
     def docker_command(
         self,
-        docker_command: Optional[str] = None,
-        docker_args: Optional[List[str]] = None,
-        docker_options: Optional[List[str]] = None
+        docker_command: 'Optional[str]' = None,
+        docker_args: 'Optional[List[str]]' = None,
+        docker_options: 'Optional[List[str]]' = None
     ):
         """
 
@@ -150,10 +155,10 @@ class ExecutorDocker(ExecutorBase):
 
         return docker_command_builder
 
-    async def _execute(
+    def _execute(
         self,
-        command: Optional[CommandBase] = None,
-        user: Optional[str] = None,
+        command: 'Optional[CommandBase]' = None,
+        user: 'Optional[str]' = None,
         inside_container: bool = True
     ) -> ExecutionAsyncio:
 
@@ -163,6 +168,6 @@ class ExecutorDocker(ExecutorBase):
             cmd = command
 
         execution = ExecutionAsyncio(cmd)
-        await execution.run()
+        execution.run()
 
         return execution

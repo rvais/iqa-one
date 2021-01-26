@@ -8,7 +8,7 @@ from iqa.system.command.command_base import CommandBase
 
 
 class ExecutionDocker(ExecutionAsyncio):
-    async def _run(self) -> None:
+    def _run(self) -> None:
         pass
 
 #     def _docker_command(self, docker_host, docker_args, command):
