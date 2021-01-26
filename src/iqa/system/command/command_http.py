@@ -17,9 +17,9 @@ class CommandHTTP(CommandBase):
 
     def __init__(
         self,
-        args: Optional[Union[List[str], List[Tuple], List[Union[Tuple, str]]]] = None,
+        args: 'Optional[Union[List[str], List[Tuple], List[Union[Tuple, str]]]]' = None,
         method_post: bool = False,
-        url: Optional[str] = None,
+        url: 'Optional[str]' = None,
         uses_ssl: bool = False,
         stdout: bool = False,
         stderr: bool = False,
@@ -27,8 +27,8 @@ class CommandHTTP(CommandBase):
         timeout: int = 0,
         encoding: str = 'utf-8',
         wait_for: bool = False,
-        env: Optional[dict] = None,
-        path_to_exec: Optional[Union[str, bytes, PathLike]] = None,
+        env: 'Optional[dict]' = None,
+        path_to_exec: 'Optional[Union[str, bytes, PathLike]]' = None,
         **kwargs
     ) -> None:
         """
@@ -94,21 +94,21 @@ class CommandHTTP(CommandBase):
 
         self._data.update(kwargs)
 
-    def __str__(self):
+    def __str__(self) -> str:
         args = ["%s=%s" % (quote(a, safe=''), quote(b, safe='')) for (a, b) in self.args]
         url = self.url if self.url is not None else ''
         return "%s?%s" % (url, "&".join(args))
 
     @property
-    def args(self) -> List[Tuple[str, str]]:
+    def args(self) -> 'List[Tuple[str, str]]':
         return self._args.copy()
 
     @args.setter
-    def args(self, args: List[Tuple[str, str]]) -> None:
+    def args(self, args: 'List[Tuple[str, str]]') -> None:
         self._args = args
 
     @property
-    def url(self) -> Optional[str]:
+    def url(self) -> 'Optional[str]':
         return self.path_to_exec
 
     @url.setter
@@ -137,7 +137,7 @@ class CommandHTTP(CommandBase):
     def convert(
         c: CommandBase,
         method_post: bool = False,
-        url: Optional[str] = None,
+        url: 'Optional[str]' = None,
         **kwargs
     ) -> 'CommandHTTP':
         if isinstance(c, CommandHTTP):
