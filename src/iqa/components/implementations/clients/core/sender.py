@@ -12,11 +12,11 @@ if TYPE_CHECKING:
 class SenderCore(CoreMessagingClient, Sender):
     """Core python sender client."""
 
-    def __init__(self, name: str, node: Node):
+    def __init__(self, name: str, node: 'Node'):
         super().__init__(name, node)
         #  TODO - Define what kind of object the core sender is going to use (maybe the default for python ext. client)
 
-    def set_endpoint(self, listener: Listener) -> None:
+    def set_endpoint(self, listener: 'Listener') -> None:
         pass
 
     def connect(self) -> bool:
@@ -25,5 +25,5 @@ class SenderCore(CoreMessagingClient, Sender):
     def set_url(self, url: str) -> None:
         pass
 
-    def _send(self, message: Message, **kwargs) -> None:
+    def _send(self, message: 'Message', **kwargs) -> None:
         pass
