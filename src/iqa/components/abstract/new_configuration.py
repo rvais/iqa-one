@@ -26,10 +26,10 @@ class Configuration(object):
     def __init__(
             self,
             load_immediately: bool = False,
-            config_files: Optional[Union[Union[str, bytes, PathLike], List[Union[str, bytes, PathLike]]]] = None,
-            profile_path: Optional[Union[str, bytes, PathLike]] = None,
-            output_path: Optional[Union[str, bytes, PathLike]] = None,
-            config_dir: Optional[Union[str, bytes, PathLike]] = None,
+            config_files: 'Optional[Union[Union[str, bytes, PathLike], List[Union[str, bytes, PathLike]]]]' = None,
+            profile_path: 'Optional[Union[str, bytes, PathLike]]' = None,
+            output_path: 'Optional[Union[str, bytes, PathLike]]' = None,
+            config_dir: 'Optional[Union[str, bytes, PathLike]]' = None,
             **kwargs
     ) -> None:
         self._config_files: Optional[
@@ -47,59 +47,59 @@ class Configuration(object):
         self._init_defaults = kwargs.copy()
 
     @property
-    def profile(self) -> Optional[Union[str, bytes, PathLike]]:
+    def profile(self) -> 'Optional[Union[str, bytes, PathLike]]':
         return self._profile
 
     @profile.setter
-    def profile(self, profile: Optional[Union[str, bytes, PathLike]]) -> None:
+    def profile(self, profile: 'Optional[Union[str, bytes, PathLike]]') -> None:
         self._profile = profile
 
     @property
-    def config_dir(self) -> Optional[Union[str, bytes, PathLike]]:
+    def config_dir(self) -> 'Optional[Union[str, bytes, PathLike]]':
         return self._config_dir
 
     @config_dir.setter
-    def config_dir(self, config_dir: Optional[Union[str, bytes, PathLike]]) -> None:
+    def config_dir(self, config_dir: 'Optional[Union[str, bytes, PathLike]]') -> None:
         self._config_dir = config_dir
 
     @property
-    def output_path(self) -> Optional[Union[str, bytes, PathLike]]:
+    def output_path(self) -> 'Optional[Union[str, bytes, PathLike]]':
         if self._output_path is None:
             return tempfile.gettempdir()
         return self._output_path
 
     @output_path.setter
-    def output_path(self, output_path: Optional[Union[str, bytes, PathLike]]) -> None:
+    def output_path(self, output_path: 'Optional[Union[str, bytes, PathLike]]') -> None:
         self._output_path = output_path
 
     @property
-    def data(self) -> Dict:
+    def data(self) -> 'Dict':
         if self._yaml_data is None:
             return {}
         return self._yaml_data.copy()
 
     @property
-    def original_data(self) -> Dict:
+    def original_data(self) -> 'Dict':
         if self._original_yaml_data is None:
             return {}
         return self._original_yaml_data.copy()
 
     @property
-    def default_config_file(self) -> Union[Union[str, bytes, PathLike]]:
+    def default_config_file(self) -> 'Union[Union[str, bytes, PathLike]]':
         return os.path.join(
             self.output_path, '%s.%s' % (self.default_config_file_name, self.default_config_file_extension)
         )
 
     def load_configuration(
             self,
-            config_files: Optional[Union[Union[str, bytes, PathLike], List[Union[str, bytes, PathLike]]]] = None
+            config_files: 'Optional[Union[Union[str, bytes, PathLike], List[Union[str, bytes, PathLike]]]]' = None
     ) -> bool:
         return self.update_configuration(True, config_files)
 
     def update_configuration(
             self,
             create_new_configuration: bool = False,
-            config_files: Optional[Union[Union[str, bytes, PathLike], List[Union[str, bytes, PathLike]]]] = None,
+            config_files: 'Optional[Union[Union[str, bytes, PathLike], List[Union[str, bytes, PathLike]]]]' = None,
             **kwargs
     ) -> bool:
         if create_new_configuration:
@@ -122,7 +122,7 @@ class Configuration(object):
 
     def _load_config_file(
             self,
-            config_file: Optional[Union[str, bytes, PathLike]] = None
+            config_file: 'Optional[Union[str, bytes, PathLike]]' = None
     ) -> bool:
         if config_file is None:
             return True
@@ -140,24 +140,24 @@ class Configuration(object):
 
     def dump_configuration(
             self,
-            config_file: Optional[Union[str, bytes, PathLike]] = None,
+            config_file: 'Optional[Union[str, bytes, PathLike]]' = None,
             override: bool = False
-    ) -> Optional[Union[str, bytes, os.PathLike]]:
+    ) -> 'Optional[Union[str, bytes, os.PathLike]]':
         return self._dump_configuration(self._yaml_data, config_file, override)
 
     def dump_original_configuration(
             self,
-            config_file: Optional[Union[str, bytes, PathLike]] = None,
+            config_file: 'Optional[Union[str, bytes, PathLike]]' = None,
             override: bool = False
-    ) -> Optional[Union[str, bytes, os.PathLike]]:
+    ) -> 'Optional[Union[str, bytes, os.PathLike]]':
         return self._dump_configuration(self._original_yaml_data, config_file, override)
 
     def _dump_configuration(
             self,
             data: dict = None,
-            config_file: Optional[Union[str, bytes, PathLike]] = None,
+            config_file: 'Optional[Union[str, bytes, PathLike]]' = None,
             override: bool = False
-    ) -> Optional[Union[str, bytes, os.PathLike]]:
+    ) -> 'Optional[Union[str, bytes, os.PathLike]]':
         if data is None or len(data) == 0:
             return None
 
@@ -174,11 +174,11 @@ class Configuration(object):
 
     def generate_config_files(
             self,
-            profile_path: Optional[Union[str, bytes, PathLike]] = None,
-            custom_tune_files: Optional[Union[Union[str, bytes, PathLike], List[Union[str, bytes, PathLike]]]] = None,
-            output_path: Optional[Union[str, bytes, PathLike]] = None,
+            profile_path: 'Optional[Union[str, bytes, PathLike]]' = None,
+            custom_tune_files: 'Optional[Union[Union[str, bytes, PathLike], List[Union[str, bytes, PathLike]]]]' = None,
+            output_path: 'Optional[Union[str, bytes, PathLike]]' = None,
             **kwqrgs
-    ) -> Optional[Union[str, bytes, PathLike]]:
+    ) -> 'Optional[Union[str, bytes, PathLike]]':
         if output_path is None:
             output_path = self.output_path
 
