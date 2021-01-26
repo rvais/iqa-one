@@ -11,7 +11,7 @@ class Router(MessagingServer):
     Abstract abstract Router
     """
 
-    def get_url(self, port: Optional[int] = None, listener: Optional[Listener] = None) -> str:
+    def get_url(self, port: 'Optional[int]' = None, listener: 'Optional[Listener]' = None) -> str:
         return NotImplemented
 
     def __init__(self, **kwargs) -> None:
