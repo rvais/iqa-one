@@ -12,16 +12,22 @@ if TYPE_CHECKING:
 class ExecutorAsyncio(ExecutorBase):
     """ Executor implementation for localhost AsyncIO executions
     """
-    implementation: str = "async local"
-    name: str = 'Executor class for asynchronous localhost execution'
 
-    def __init__(self, user: str = 'root', password: Optional[str] = None, **kwargs) -> None:
+    def __init__(self, user: str = 'root', password: 'Optional[str]' = None, **kwargs) -> None:
 
         super(ExecutorAsyncio).__init__(**kwargs)
         self._user = user
         self._password = password
 
-    async def _execute(self, command: CommandBase) -> ExecutionAsyncio:
+    @staticmethod
+    def implementation() -> str:
+        return "async local"
+
+    @property
+    def name(self) -> str:
+        return 'Executor class for asynchronous localhost execution'
+
+    async def _execute(self, command: 'CommandBase') -> ExecutionAsyncio:
         execution = ExecutionAsyncio(command)
         await execution.run()
         return execution
