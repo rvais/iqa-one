@@ -23,11 +23,11 @@ class Node(abc.ABC):
     def __init__(
         self,
         hostname: str,
-        executor: ExecutorBase,
-        ip: Optional[str] = None,
-        name: Optional[str] = None
+        executor: 'ExecutorBase',
+        ip: 'Optional[str]' = None,
+        name: 'Optional[str]' = None
     ) -> None:
-        logging.getLogger().info('Initialization of Node: %s' % hostname)
+        logging.getLogger().info(f"Initialization of Node ({self.__class__.__name__}): {hostname}")
         self.hostname: str = hostname
         self.name: str = name if name else hostname
         self.executor: ExecutorBase = executor
@@ -36,9 +36,9 @@ class Node(abc.ABC):
 
         self._is_reachable()
 
-    def execute(self, command: CommandBase) -> ExecutionBase:
+    def execute(self, command: 'CommandBase') -> 'ExecutionBase':
         """Execute command using Node's executor"""
-        return await self.executor.execute(command)
+        return self.executor.execute(command)
 
     @abc.abstractmethod
     def ping(self) -> bool:

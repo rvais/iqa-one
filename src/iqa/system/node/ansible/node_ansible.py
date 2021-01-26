@@ -25,11 +25,10 @@ class NodeAnsible(Node):
     def __init__(
         self,
         hostname: str,
-        ip: Optional[str] = None,
-        executor: Optional[ExecutorAnsible] = None,
-        name: Optional[str] = None
+        ip: 'Optional[str]' = None,
+        executor: 'Optional[ExecutorAnsible]' = None,
+        name: 'Optional[str]' = None
     ) -> None:
-        logging.getLogger().info('Initialization of NodeAnsible: %s' % self.hostname)
         if executor is None:
             executor = ExecutorFactory.create_executor(self.implementation)
         super(NodeAnsible, self).__init__(hostname, executor, ip=ip, name=name)

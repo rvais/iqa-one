@@ -32,11 +32,10 @@ class NodeDocker(Node):
             hostname: str,
             docker_host: str = '',
             docker_network: str = '',
-            ip: Optional[str] = None,
-            executor: Optional[ExecutorDocker] = None,
-            name: Optional[str] = None
+            ip: 'Optional[str]' = None,
+            executor: 'Optional[ExecutorDocker]' = None,
+            name: 'Optional[str]' = None
     ) -> None:
-        logger.info('Initialization of NodeDocker: %s' % hostname)
         if executor is None:
             executor = ExecutorFactory.create_executor(self.implementation)
 
@@ -57,10 +56,10 @@ class NodeDocker(Node):
 
     def _get_container(
         self,
-        timeout: Union[float, int] = 3.0,
-        pause: Union[float, int] = 0.5,
+        timeout: 'Union[float, int]' = 3.0,
+        pause: 'Union[float, int]' = 0.5,
         docker_host: str = ''
-    ) -> Container:
+    ) -> 'Container':
         """Get Container instance"""
         logger.debug('Retrieving %s container\'s host of %s docker host.' % (self.hostname, self.docker_network))
         ref = default_timer()

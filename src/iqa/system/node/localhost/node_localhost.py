@@ -26,11 +26,10 @@ class NodeLocal(Node):
     def __init__(
         self,
         hostname: str,
-        ip: Optional[str] = None,
-        executor: Optional[Union[ExecutorBase, ExecutorLocal, ExecutorAsyncio]] = None,
-        name: Optional[str] = "localhost"
+        ip: 'Optional[str]' = None,
+        executor: 'Optional[Union[ExecutorBase, ExecutorLocal, ExecutorAsyncio]]' = None,
+        name: 'Optional[str]' = "localhost"
     ) -> None:
-        logging.getLogger().info('Initialization of NodeLocal: %s' % self.hostname)
         if executor is None:
             executor = ExecutorFactory.create_executor(self.implementation)
         super(NodeLocal, self).__init__(hostname, executor, ip=ip, name=name)
@@ -44,7 +43,7 @@ class NodeLocal(Node):
             return False
         cmd_ping.args = ['ping', '-c', '1', self.get_ip()]
 
-        execution: ExecutionBase = await self.executor.execute(cmd_ping)
+        execution: ExecutionBase = self.executor.execute(cmd_ping)
 
         # True if completed with exit code 0 and stdout has some data
         return execution.completed_successfully() and bool(execution.read_stdout())
