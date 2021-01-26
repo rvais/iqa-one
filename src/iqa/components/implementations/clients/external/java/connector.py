@@ -14,9 +14,9 @@ class ConnectorJava(ClientJava):
     """External Java Qpid JMS connector client."""
 
     _command: JavaConnectorClientCommand
-    path_to_exec: Optional[PathLike[Any]]
+    path_to_exec: 'Optional[PathLike[Any]]'
 
-    def __init__(self, name: str, node: Node, path_to_exec: Optional[PathLike[Any]] = None, **kwargs) -> None:
+    def __init__(self, name: str, node: 'Node', path_to_exec: 'Optional[PathLike[Any]]' = None, **kwargs) -> None:
         super(ConnectorJava, self).__init__(name, node, **kwargs)
         self.path_to_exec = path_to_exec
 
@@ -37,11 +37,11 @@ class ConnectorJava(ClientJava):
 
     def set_ssl_auth(
         self,
-        pem_file: Optional[str] = None,
-        key_file: Optional[str] = None,
-        keystore: Optional[str] = None,
-        keystore_pass: Optional[str] = None,
-        keystore_alias: Optional[str] = None,
+        pem_file: 'Optional[str]' = None,
+        key_file: 'Optional[str]' = None,
+        keystore: 'Optional[str]' = None,
+        keystore_pass: 'Optional[str]' = None,
+        keystore_alias: 'Optional[str]' = None,
     ) -> None:
         self._command.connection.conn_ssl_keystore_location = keystore
         self._command.connection.conn_ssl_keystore_password = keystore_pass

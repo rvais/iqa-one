@@ -27,9 +27,9 @@ class JavaControlOptionsCommon(ControlOptionsCommon):
         self,
         broker: str = '127.0.0.1:5672',
         count: int = 1,
-        timeout: Optional[int] = None,
-        sync_mode: Optional[str] = None,
-        close_sleep: Optional[int] = None,
+        timeout: 'Optional[int]' = None,
+        sync_mode: 'Optional[str]' = None,
+        close_sleep: 'Optional[int]' = None,
     ) -> None:
         super(JavaControlOptionsCommon, self).__init__(
             count, timeout, sync_mode, close_sleep
@@ -39,7 +39,7 @@ class JavaControlOptionsCommon(ControlOptionsCommon):
         if timeout is None:
             self.timeout = -1
 
-    def valid_options(self) -> List[Union[Toggle, Prefixed, KWOption, ListOption]]:
+    def valid_options(self) -> 'List[Union[Toggle, Prefixed, KWOption, ListOption]]':
         return ControlOptionsCommon.valid_options(self) + [
             Prefixed('broker', '--broker')
         ]
@@ -57,12 +57,12 @@ class JavaControlOptionsSenderReceiver(
         broker: str = '127.0.0.1:5672',
         address: str = 'examples',
         count: int = 1,
-        timeout: Optional[int] = None,
-        sync_mode: Optional[str] = None,
-        close_sleep: Optional[int] = None,
-        duration: Optional[int] = None,
-        duration_mode: Optional[str] = None,
-        capacity: Optional[int] = None
+        timeout: 'Optional[int]' = None,
+        sync_mode: 'Optional[str]' = None,
+        close_sleep: 'Optional[int]' = None,
+        duration: 'Optional[int]' = None,
+        duration_mode: 'Optional[str]' = None,
+        capacity: 'Optional[int]' = None
     ) -> None:
         ControlOptionsSenderReceiver.__init__(
             self, duration=duration, duration_mode=duration_mode, capacity=capacity
@@ -77,7 +77,7 @@ class JavaControlOptionsSenderReceiver(
         )
         self.address: str = address
 
-    def valid_options(self) -> List[Union[Toggle, Prefixed, KWOption, ListOption]]:
+    def valid_options(self) -> 'List[Union[Toggle, Prefixed, KWOption, ListOption]]':
         return JavaControlOptionsCommon.valid_options(self) + [
             Prefixed('address', '--address')
         ]
@@ -95,11 +95,11 @@ class JavaControlOptionsReceiver(
         broker: str = '127.0.0.1:5672',
         address: str = 'examples',
         count: int = 1,
-        timeout: Optional[int] = None,
-        sync_mode: Optional[str] = None,
-        duration: Optional[int] = None,
-        duration_mode: Optional[str] = None,
-        capacity: Optional[int] = None,
+        timeout: 'Optional[int]' = None,
+        sync_mode: 'Optional[str]' = None,
+        duration: 'Optional[int]' = None,
+        duration_mode: 'Optional[str]' = None,
+        capacity: 'Optional[int]' = None,
         dynamic: bool = False,
     ) -> None:
         ControlOptionsReceiver.__init__(self, dynamic=dynamic)
@@ -115,28 +115,28 @@ class JavaControlOptionsReceiver(
             capacity=capacity,
         )
 
-    def valid_options(self) -> List[Union[Toggle, Prefixed, KWOption, ListOption]]:
+    def valid_options(self) -> 'List[Union[Toggle, Prefixed, KWOption, ListOption]]':
         return JavaControlOptionsSenderReceiver.valid_options(self)
 
 
 class JavaConnectionOptionsCommon(ConnectionOptionsCommon):
     def __init__(
         self,
-        conn_auth_mechanisms: Optional[str] = None,
-        conn_username: Optional[str] = None,
-        conn_password: Optional[str] = None,
-        conn_ssl_keystore_location: Optional[str] = None,
-        conn_ssl_keystore_password: Optional[str] = None,
-        conn_ssl_key_alias: Optional[str] = None,
-        conn_ssl_trust_all: Optional[str] = None,
-        conn_ssl_verify_host: Optional[str] = None,
-        urls: Optional[str] = None,
+        conn_auth_mechanisms: 'Optional[str]' = None,
+        conn_username: 'Optional[str]' = None,
+        conn_password: 'Optional[str]' = None,
+        conn_ssl_keystore_location: 'Optional[str]' = None,
+        conn_ssl_keystore_password: 'Optional[str]' = None,
+        conn_ssl_key_alias: 'Optional[str]' = None,
+        conn_ssl_trust_all: 'Optional[str]' = None,
+        conn_ssl_verify_host: 'Optional[str]' = None,
+        urls: 'Optional[str]' = None,
         reconnect: bool = False,
-        reconnect_interval: Optional[int] = None,
-        reconnect_limit: Optional[int] = None,
-        reconnect_timeout: Optional[int] = None,
-        heartbeat: Optional[int] = None,
-        max_frame_size: Optional[int] = None,
+        reconnect_interval: 'Optional[int]' = None,
+        reconnect_limit: 'Optional[int]' = None,
+        reconnect_timeout: 'Optional[int]' = None,
+        heartbeat: 'Optional[int]' = None,
+        max_frame_size: 'Optional[int]' = None,
     ) -> None:
         ConnectionOptionsCommon.__init__(
             self,
@@ -157,7 +157,7 @@ class JavaConnectionOptionsCommon(ConnectionOptionsCommon):
         self.conn_ssl_trust_all: Optional[str] = conn_ssl_trust_all
         self.conn_ssl_verify_host: Optional[str] = conn_ssl_verify_host
 
-    def valid_options(self) -> List[Union[Toggle, Prefixed, KWOption, ListOption]]:
+    def valid_options(self) -> 'List[Union[Toggle, Prefixed, KWOption, ListOption]]':
         return ConnectionOptionsCommon.valid_options(self) + [
             Prefixed('conn-auth-mechanisms', '--conn-auth-mechanisms'),
             Prefixed('conn-username', '--conn-username'),

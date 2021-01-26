@@ -30,7 +30,7 @@ class JavaConnectorClientCommand(ConnectorClientCommand):
 
     def __init__(
         self,
-        path_to_exec: Optional[PathLike[Any]] = None,
+        path_to_exec: 'Optional[PathLike[Any]]' = None,
         stdout: bool = False,
         stderr: bool = False,
         daemon: bool = False,
@@ -43,7 +43,7 @@ class JavaConnectorClientCommand(ConnectorClientCommand):
         self.control: JavaControlOptionsCommon = JavaControlOptionsCommon()
         self.connection: JavaConnectionOptionsCommon = JavaConnectionOptionsCommon()
 
-    def main_command(self) -> List[str]:
+    def main_command(self) -> 'List[str]':
         jar: str = 'cli-qpid-jms.jar'
         if self.path_to_exec:
             jar = os_path.join(self.path_to_exec, jar)
@@ -53,7 +53,7 @@ class JavaConnectorClientCommand(ConnectorClientCommand):
 class JavaReceiverClientCommand(ReceiverClientCommand):
     def __init__(
         self,
-        path_to_exec: Optional[PathLike[Any]] = None,
+        path_to_exec: 'Optional[PathLike[Any]]' = None,
         stdout: bool = False,
         stderr: bool = False,
         daemon: bool = False,
@@ -71,7 +71,7 @@ class JavaReceiverClientCommand(ReceiverClientCommand):
         self.control: JavaControlOptionsReceiver = JavaControlOptionsReceiver()
         self.connection: JavaConnectionOptionsCommon = JavaConnectionOptionsCommon()
 
-    def main_command(self) -> List[str]:
+    def main_command(self) -> 'List[str]':
         jar: str = 'cli-qpid-jms.jar'
         if self.path_to_exec:
             jar = os_path.join(self.path_to_exec, jar)
@@ -81,7 +81,7 @@ class JavaReceiverClientCommand(ReceiverClientCommand):
 class JavaSenderClientCommand(SenderClientCommand):
     def __init__(
         self,
-        path_to_exec: Optional[PathLike[Any]] = None,
+        path_to_exec: 'Optional[PathLike[Any]]' = None,
         stdout: bool = False,
         stderr: bool = False,
         daemon: bool = False,
@@ -99,7 +99,7 @@ class JavaSenderClientCommand(SenderClientCommand):
         self.control: JavaControlOptionsSenderReceiver = JavaControlOptionsSenderReceiver()
         self.connection: JavaConnectionOptionsCommon = JavaConnectionOptionsCommon()
 
-    def main_command(self) -> List[str]:
+    def main_command(self) -> 'List[str]':
         jar: str = 'cli-qpid-jms.jar'
         if self.path_to_exec:
             jar = os_path.join(self.path_to_exec, jar)
