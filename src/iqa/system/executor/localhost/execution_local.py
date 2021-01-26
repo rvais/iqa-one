@@ -24,10 +24,10 @@ class ExecutionProcess(ExecutionBase):
 
     def __init__(
             self,
-            command: CommandBase,
-            executor: Optional[ExecutorBase] = None,
-            modified_args: Optional[List[str]] = None,
-            env: Optional[dict] = None
+            command: 'CommandBase',
+            executor: 'Optional[ExecutorBase]' = None,
+            modified_args: 'Optional[List[str]]' = None,
+            env: 'Optional[dict]' = None
     ) -> None:
         """
         Instance is initialized with a command that was effectively
