@@ -19,7 +19,7 @@ class Client(ABC):
 
     @property
     @abstractmethod
-    def name(self) -> Optional[str]:
+    def name(self) -> 'Optional[str]':
         """
 
         :return: String
@@ -28,7 +28,7 @@ class Client(ABC):
 
     @property
     @abstractmethod
-    def version(self) -> Optional[str]:
+    def version(self) -> 'Optional[str]':
         """
 
         :return: String
