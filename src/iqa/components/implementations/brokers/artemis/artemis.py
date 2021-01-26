@@ -1,17 +1,22 @@
 import logging
-from typing import List, Optional
+from typing import TYPE_CHECKING
 
 from iqa.abstract.destination.address import Address
 from iqa.abstract.destination.queue import Queue
 from iqa.abstract.destination.routing_type import RoutingType
-from iqa.abstract.listener import Listener
 from iqa.abstract.server.broker import Broker
+from iqa.components.abstract.network.protocol.protocol import Protocol
 from iqa.components.abstract.server.server_component import ServerComponent
-from iqa.components.brokers.artemis.artemis_config import ArtemisConfig
-from iqa.components.brokers.artemis.management.jolokia_client import (
-    ArtemisJolokiaClient,
-)
-from iqa.system.node.node import Node
+from iqa.components.implementations.brokers.artemis.new_artemis_config import ArtemisConfig
+from iqa.components.implementations.brokers.artemis.management.jolokia_client import ArtemisJolokiaClient
+
+if TYPE_CHECKING:
+    from os import PathLike
+    from typing import Optional, Any, List, Union
+    from iqa.abstract.listener import Listener
+    from iqa.system.node.base.node import Node
+    from iqa.system.service.base.service import Service
+    from iqa.components.abstract.configuration import Configuration
 
 
 class Artemis(ServerComponent, Broker):
@@ -19,18 +24,41 @@ class Artemis(ServerComponent, Broker):
     Apache ActiveMQ Artemis has a proven non blocking architecture. It delivers outstanding performance.
     """
 
-    supported_protocols: list = ["AMQP10", "MQTT", "STOMP", "Openwire"]
+    supported_protocols: 'List[Protocol]' = [
+        Protocol.CORE, Protocol.AMQP10, Protocol.MQTT, Protocol.STOMP, Protocol.Openwire
+    ]
+
     name: str = 'Artemis'
     implementation: str = 'artemis'
 
+    # parameters here are purely for typing purposes, autocompletion and to know method signature without need to look
+    # at signature of parent classes
     def __init__(
         self,
-        name: str,
-        node: Node,
-        listeners: Optional[List[Listener]] = None,
+        node: 'Node',
+        name: 'Optional[str]' = None,
+        service: 'Optional[Service]' = None,
+        listeners: 'Optional[List[Listener]]' = None,
+        configuration: 'Optional[Configuration]' = None,
+        broker_name: 'Optional[str]' = None,
+        broker_path: 'Optional[PathLike[Any]]' = None,
+        broker_web_port: 'Union[str, int]' = 8161,
+        broker_user: str = 'admin',
+        broker_password: str = 'admin',
         **kwargs
     ) -> None:
-        self.instance_name = name
+        # dump arguments into dictionary
+        inputs = locals()
+        # remove self and kwargs variables as they would mess things up
+        del inputs['self']
+        del inputs['kwargs']
+        # update kwargs to pass in super().__init__()
+        if name is None:
+            inputs['name'] = self.name
+        kwargs.update(inputs)
+
+        super(Artemis, self).__init__(**kwargs)
+
         self._queues: List[Queue] = list()
         self._addresses: List[Address] = list()
         self._addresses_dict: dict = {}
@@ -38,11 +66,16 @@ class Artemis(ServerComponent, Broker):
         self.configuration.create_configuration(
             kwargs.get('inventory_file', 'inventory.yml')
         )
-        super(Artemis, self).__init__(name, node, listeners, self.configuration, **kwargs)  # type: ignore
-        self.management_client: ArtemisJolokiaClient = self.get_management_client()  # type: ignore
-        self.users = self.configuration.users
 
-    def queues(self, refresh: bool = True) -> List[Queue]:
+        self._management_client: ArtemisJolokiaClient = self._get_management_client()
+
+    @property
+    def management_client(self) -> ArtemisJolokiaClient:
+        if self._management_client is None:
+            self._get_management_client()
+        return self._management_client
+
+    def queues(self, refresh: bool = True) -> list:
         """
         Retrieves and lists all queues
         :param refresh:
@@ -54,7 +87,7 @@ class Artemis(ServerComponent, Broker):
         self._refresh_addresses_and_queues()
         return self._queues
 
-    def addresses(self, refresh: bool = True) -> List[Address]:
+    def addresses(self, refresh: bool = True) -> list:
         """
         Retrieves and lists all addresses
         :param refresh:
@@ -75,7 +108,7 @@ class Artemis(ServerComponent, Broker):
         routing_type = self._get_routing_type(address.routing_type)
         return self.management_client.create_address(address.name, routing_type)
 
-    def create_queue(self, queue: Queue, address: Address, durable: bool = True):
+    def create_queue(self, queue: 'Queue', address: 'Address', durable: bool = True):
         """
         Creates a given queue based on provided arguments
         :param queue:
@@ -177,7 +210,7 @@ class Artemis(ServerComponent, Broker):
         self._addresses = addresses
         self._queues = queues
 
-    def get_management_client(self) -> ArtemisJolokiaClient:  # type: ignore
+    def _get_management_client(self) -> ArtemisJolokiaClient:  # type: ignore
         """
         Creates a new instance of the Jolokia Client.
         :return:
@@ -192,7 +225,7 @@ class Artemis(ServerComponent, Broker):
         return client
 
     @staticmethod
-    def _get_routing_type(routing_type: RoutingType) -> str:
+    def _get_routing_type(routing_type: 'RoutingType') -> str:
         """
         Returns the routing type str value, based on expected values on the broker.
         :param routing_type:
@@ -202,5 +235,5 @@ class Artemis(ServerComponent, Broker):
             return 'ANYCAST, MULTICAST'
         return routing_type.name
 
-    def get_url(self, port: int = None, listener: Listener = None) -> str:
+    def get_url(self, port: int = None, listener: 'Listener' = None) -> str:
         pass
