@@ -16,9 +16,9 @@ class MessagingClient(Client):
     """
 
     # Required variables
-    supported_protocols: List[Protocol] = []
-    name: Optional[str] = None
-    version: Optional[str] = None
+    supported_protocols: 'List[Protocol]' = []
+    name: 'Optional[str]' = None
+    version: 'Optional[str]' = None
 
     def __init__(self, message_buffer: bool = True) -> None:
         super(MessagingClient, self).__init__()
@@ -27,7 +27,7 @@ class MessagingClient(Client):
         self.message_counter: int = 0
 
     @property
-    def last_message(self) -> Optional[Message]:
+    def last_message(self) -> 'Optional[Message]':
         """Method for picking up last received message.
         :return: Last message received or None
         :rtype: iqa.iqa.abstract.message.Message
@@ -35,7 +35,7 @@ class MessagingClient(Client):
         return self.messages[-1] if self.messages else None
 
     @abstractmethod
-    def set_endpoint(self, listener: Listener) -> None:
+    def set_endpoint(self, listener: 'Listener') -> None:
         pass
 
     @abstractmethod
