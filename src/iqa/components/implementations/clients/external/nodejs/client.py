@@ -12,11 +12,11 @@ if TYPE_CHECKING:
 class ClientNodeJS(ClientExternal):
     """NodeJS RHEA client"""
 
-    supported_protocols: List[Protocol] = [Protocol.AMQP10]
+    supported_protocols: 'List[Protocol]' = [Protocol.AMQP10]
     implementation: str = 'nodejs'
     version: str = '1.0.1'
 
-    def __init__(self, name: str, node: Node, **kwargs):
+    def __init__(self, name: str, node: 'Node', **kwargs):
         super(ClientNodeJS, self).__init__(name, node, **kwargs)
 
     def _new_command(
@@ -26,7 +26,7 @@ class ClientNodeJS(ClientExternal):
         daemon: bool = False,
         timeout: int = 0,
         encoding: str = 'utf-8',
-    ) -> ClientCommandBase:
+    ) -> 'ClientCommandBase':
         pass
 
     def _set_url(self, url: str):
@@ -37,15 +37,15 @@ class ClientNodeJS(ClientExternal):
 
     def set_ssl_auth(
         self,
-        pem_file: Optional[str] = None,
-        key_file: Optional[str] = None,
-        keystore: Optional[str] = None,
-        keystore_pass: Optional[str] = None,
-        keystore_alias: Optional[str] = None,
+        pem_file: 'Optional[str]' = None,
+        key_file: 'Optional[str]' = None,
+        keystore: 'Optional[str]' = None,
+        keystore_pass: 'Optional[str]' = None,
+        keystore_alias: 'Optional[str]' = None,
     ):
         pass
 
-    def set_endpoint(self, listener: Listener):
+    def set_endpoint(self, listener: 'Listener'):
         pass
 
     def connect(self) -> bool:

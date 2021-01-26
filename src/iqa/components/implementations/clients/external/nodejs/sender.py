@@ -19,9 +19,9 @@ class SenderNodeJS(ClientNodeJS, Sender):
     """External NodeJS sender client."""
 
     _command: NodeJSSenderClientCommand
-    path_to_exec: Optional[PathLike[Any]]
+    path_to_exec: 'Optional[PathLike[Any]]'
 
-    def __init__(self, name: str, node: Node, path_to_exec: Optional[PathLike[Any]] = None, **kwargs) -> None:
+    def __init__(self, name: str, node: 'Node', path_to_exec: 'Optional[PathLike[Any]]' = None, **kwargs) -> None:
         super(SenderNodeJS, self).__init__(name, node, **kwargs)
         self.path_to_exec = path_to_exec
 
@@ -45,11 +45,11 @@ class SenderNodeJS(ClientNodeJS, Sender):
 
     def set_ssl_auth(
         self,
-        pem_file: Optional[str] = None,
-        key_file: Optional[str] = None,
-        keystore: Optional[str] = None,
-        keystore_pass: Optional[str] = None,
-        keystore_alias: Optional[str] = None,
+        pem_file: 'Optional[str]' = None,
+        key_file: 'Optional[str]' = None,
+        keystore: 'Optional[str]' = None,
+        keystore_pass: 'Optional[str]' = None,
+        keystore_alias: 'Optional[str]' = None,
     ) -> None:
         self._command.connection.conn_ssl_certificate = pem_file
         self._command.connection.conn_ssl_private_key = key_file
@@ -71,7 +71,7 @@ class SenderNodeJS(ClientNodeJS, Sender):
             encoding=encoding,
         )
 
-    def _send(self, message: Message, **kwargs) -> None:
+    def _send(self, message: 'Message', **kwargs) -> None:
         self._command.message.msg_content = message.application_data
         self.execution = self.node.execute(self.command)
 

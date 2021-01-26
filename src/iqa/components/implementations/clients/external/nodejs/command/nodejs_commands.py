@@ -34,7 +34,7 @@ class NodeJSConnectorClientCommand(ConnectorClientCommand):
 
     def __init__(
         self,
-        path_to_exec: Optional[PathLike[Any]] = None,
+        path_to_exec: 'Optional[PathLike[Any]]' = None,
         stdout: bool = False,
         stderr: bool = False,
         daemon: bool = False,
@@ -47,7 +47,7 @@ class NodeJSConnectorClientCommand(ConnectorClientCommand):
         self.control: NodeJSControlOptionsCommon = NodeJSControlOptionsCommon()
         self.connection: NodeJSConnectionOptionsCommon = NodeJSConnectionOptionsCommon()
 
-    def main_command(self) -> List[str]:
+    def main_command(self) -> 'List[str]':
         executable: str = 'cli-rhea-connector'
         if self.path_to_exec:
             executable = os_path.join(self.path_to_exec, executable)
@@ -63,7 +63,7 @@ class NodeJSReceiverClientCommand(ReceiverClientCommand):
 
     def __init__(
         self,
-        path_to_exec: Optional[PathLike[Any]] = None,
+        path_to_exec: 'Optional[PathLike[Any]]' = None,
         stdout: bool = False,
         stderr: bool = False,
         daemon: bool = False,
@@ -78,7 +78,7 @@ class NodeJSReceiverClientCommand(ReceiverClientCommand):
         self.link: LinkOptionsSenderReceiver = LinkOptionsSenderReceiver()
         self.reactor: ReactorOptionsSenderReceiver = ReactorOptionsSenderReceiver()
 
-    def main_command(self) -> List[str]:
+    def main_command(self) -> 'List[str]':
         executable: str = 'cli-rhea-receiver'
         if self.path_to_exec:
             executable = os_path.join(self.path_to_exec, executable)
@@ -94,7 +94,7 @@ class NodeJSSenderClientCommand(SenderClientCommand):
 
     def __init__(
         self,
-        path_to_exec: Optional[PathLike[Any]] = None,
+        path_to_exec: 'Optional[PathLike[Any]]' = None,
         stdout: bool = False,
         stderr: bool = False,
         daemon: bool = False,
@@ -109,7 +109,7 @@ class NodeJSSenderClientCommand(SenderClientCommand):
         self.link: LinkOptionsSenderReceiver = LinkOptionsSenderReceiver()
         self.reactor: ReactorOptionsSenderReceiver = ReactorOptionsSenderReceiver()
 
-    def main_command(self) -> List[str]:
+    def main_command(self) -> 'List[str]':
         executable: str = 'cli-rhea-sender'
         if self.path_to_exec:
             executable = os_path.join(self.path_to_exec, executable)
