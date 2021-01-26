@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING
+from abc import abstractmethod
 
 from iqa.abstract.client.messaging_client import MessagingClient
 from iqa.components.abstract.component import Component
@@ -21,9 +22,9 @@ class ClientExternal(Component, MessagingClient):
     # As mixing --timeout with --count is causing issues
     TIMEOUT: int = 90
 
-    def __init__(self, name: str, node: Node, **kwargs) -> None:
+    def __init__(self, name: str, node: 'Node', **kwargs) -> None:
         super(ClientExternal, self).__init__(name, node)
-        self.execution: Optional[ExecutionBase] = None
+        self._execution: Optional[ExecutionBase] = None
         self._command: ClientCommandBase = ClientCommandBase([])
         self._url: Optional[str] = None
         self.reset_command()
@@ -45,7 +46,7 @@ class ClientExternal(Component, MessagingClient):
             stdout=True, timeout=ClientExternal.TIMEOUT, daemon=True
         )
 
-    def get_url(self) -> Optional[str]:
+    def get_url(self) -> 'Optional[str]':
         return self._url
 
     def set_url(self, url: str) -> None:
@@ -57,6 +58,7 @@ class ClientExternal(Component, MessagingClient):
         """
         self._set_url(url)
 
+    @abstractmethod
     def _new_command(
         self,
         stdout: bool = False,
@@ -77,6 +79,7 @@ class ClientExternal(Component, MessagingClient):
         """
         raise NotImplementedError
 
+    @abstractmethod
     def _set_url(self, url: str) -> None:
         """
         This method must be implemented by each concrete client by adjusting url parts
@@ -86,6 +89,7 @@ class ClientExternal(Component, MessagingClient):
         """
         raise NotImplementedError
 
+    @abstractmethod
     def set_auth_mechs(self, mechs: str):
         """
         Implementing clients must know how to adjust mechanisms (if supported).
@@ -94,13 +98,14 @@ class ClientExternal(Component, MessagingClient):
         """
         raise NotImplementedError
 
+    @abstractmethod
     def set_ssl_auth(
         self,
-        pem_file: Optional[str] = None,
-        key_file: Optional[str] = None,
-        keystore: Optional[str] = None,
-        keystore_pass: Optional[str] = None,
-        keystore_alias: Optional[str] = None,
+        pem_file: 'Optional[str]' = None,
+        key_file: 'Optional[str]' = None,
+        keystore: 'Optional[str]' = None,
+        keystore_pass: 'Optional[str]' = None,
+        keystore_alias: 'Optional[str]' = None,
     ):
         """
         Allows implementing clients to use the SSL credentials according to each implementing model.
@@ -113,9 +118,11 @@ class ClientExternal(Component, MessagingClient):
         """
         raise NotImplementedError
 
-    def set_endpoint(self, listener: Listener) -> None:
+    @abstractmethod
+    def set_endpoint(self, listener: 'Listener') -> None:
         raise NotImplementedError
 
+    @abstractmethod
     def connect(self) -> bool:
         raise NotImplementedError
 
