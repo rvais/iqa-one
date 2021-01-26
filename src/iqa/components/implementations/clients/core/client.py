@@ -13,14 +13,14 @@ if TYPE_CHECKING:
 class CoreMessagingClient(Component, MessagingClient):
     """Internal core Proton mapping client."""
 
-    supported_protocols: List[Protocol] = [Protocol.AMQP10]
+    supported_protocols: 'List[Protocol]' = [Protocol.AMQP10]
     implementation: str = 'core'
     version: str = '0.1'
 
-    def __init__(self, name: str, node: Node) -> None:
+    def __init__(self, name: str, node: 'Node') -> None:
         super().__init__(name, node)
 
-    def set_endpoint(self, listener: Listener) -> None:
+    def set_endpoint(self, listener: 'Listener') -> None:
         pass
 
     def connect(self) -> bool:
