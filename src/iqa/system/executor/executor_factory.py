@@ -3,6 +3,8 @@ import logging
 from iqa.utils.walk_package import walk_package_and_import
 from iqa.system.executor.base.executor import ExecutorBase
 from iqa.utils.utils import get_subclass_with_prop_value
+from iqa.system.executor import __package__
+
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -11,14 +13,14 @@ if TYPE_CHECKING:
 
 class ExecutorFactory(object):
     logger = logging.getLogger(__name__)
-    __known_implementations: List[Type[ExecutorBase]] = walk_package_and_import(__path__, ExecutorBase)
+    __known_implementations: 'List[Type[ExecutorBase]]' = walk_package_and_import(__package__, ExecutorBase)
 
     @staticmethod
-    def get_known_implementations() -> List[Type[ExecutorBase]]:
+    def get_known_implementations() -> 'List[Type[ExecutorBase]]':
         return ExecutorFactory.__known_implementations.copy()
 
     @staticmethod
-    def create_executor(implementation: str, **kwargs) -> ExecutorBase:
+    def create_executor(implementation: str, **kwargs) -> 'ExecutorBase':
         """
             Loops through all implementations of the Executor class
             and returns an instance of the executor initialized from kwargs.
@@ -32,8 +34,8 @@ class ExecutorFactory(object):
         try:
             executor = get_subclass_with_prop_value(
                 superclass=ExecutorBase,
-                cls_property_val='implementation',
-                in_class_property=implementation
+                in_class_property='implementation',
+                cls_property_val=implementation
             )
             return executor(**kwargs)
         except ValueError:

@@ -1,11 +1,19 @@
 import logging
-from typing import Optional
 
+from ansible.inventory.group import Group
 from ansible.inventory.host import Host
 from ansible.inventory.manager import InventoryManager
 from ansible.parsing.dataloader import DataLoader
 from ansible.template import Templar
 from ansible.vars.manager import VariableManager
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Optional, List, Type
+    from iqa.components.abstract.component import Component
+    from iqa.system.node.base.node import Node
+    from iqa.system.executor.base.executor import ExecutorBase
 
 
 class AnsibleVirtualComponent(object):
@@ -17,7 +25,7 @@ class AnsibleVirtualComponent(object):
         self.implementation: str = implementation
         self.members: list = members
         self.kwargs: dict = kwargs
-        self.component = None  # real component, once created and populated with member
+        self.component: Optional[Component] = None  # real component, once created and populated with member
 
 
 class AnsibleInventory(object):
@@ -25,7 +33,7 @@ class AnsibleInventory(object):
 
     def __init__(self, inventory: str = None, extra_vars: dict = None) -> None:
         self._logger: logging.Logger = logging.getLogger(self.__class__.__module__)
-        self.inventory: Optional[str] = inventory
+        self.inventory: str or None = inventory
         self.loader: DataLoader = DataLoader()
         self._logger.info('Loading inventory: %s' % inventory)
         self._logger.debug('Extra variables: %s' % extra_vars)
@@ -56,29 +64,22 @@ class AnsibleInventory(object):
 
         return hosts
 
-    def get_host_vars(self, host: Host):
+    def get_hosts(self) -> 'List[Host]':
+        return self.get_hosts_containing(var=None)
+
+    def get_hosts_names(self) -> 'List[str]':
+        return [x.name for x in self.get_hosts()]
+
+    def get_host_vars(self, host: Host) -> dict:
         data: dict = self.var_mgr.get_vars(host=host)
         templar: Templar = Templar(variables=data, loader=self.loader)
         return templar.template(data, fail_on_undefined=False)
 
-    def get_virtual_components(self) -> list:
-        virtual_components: list = []
+    def get_groups(self) -> 'List[Group]':
+        return self.inv_mgr.groups.values()
+
+    def get_groups_names(self) -> 'List[str]':
+        groups: list = []
         for group in self.inv_mgr.get_groups_dict():
-            group_vars = self.inv_mgr.groups[group].get_vars()
-
-            if self.virt_component in group_vars:
-                vcmp_type = group_vars.get(self.virt_component)
-                group_vars.pop('virtual_component')
-                vcmp_impl = group_vars.get('implementation')
-                group_vars.pop('implementation')
-                hosts: list = self.inv_mgr.groups[group].get_hosts()
-                vcmp: AnsibleVirtualComponent = AnsibleVirtualComponent(
-                    name=group,
-                    cmp_type=vcmp_type,
-                    implementation=vcmp_impl,
-                    members=hosts,
-                    **group_vars
-                )
-
-                virtual_components.append(vcmp)
-        return virtual_components
+            groups.append(group)
+        return groups
