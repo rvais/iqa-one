@@ -18,9 +18,9 @@ class CommandBaseAnsible(CommandBase):
 
     def __init__(
             self,
-            args: Optional[List[str]] = None,
-            ansible_args: Optional[List[str]] = None,
-            path_to_exec: Optional[Union[str, bytes, PathLike]] = "ansible",
+            args: 'Optional[List[str]]' = None,
+            ansible_args: 'Optional[List[str]]' = None,
+            path_to_exec: 'Optional[Union[str, bytes, PathLike]]' = "ansible",
             ansible_module: str = 'raw',
             stdout: bool = False,
             stderr: bool = False,
@@ -28,8 +28,8 @@ class CommandBaseAnsible(CommandBase):
             timeout: int = 0,
             wait_for: bool = False,
             encoding: str = 'utf-8',
-            env: Optional[Dict[str, Any]] = None,
-            **kwargs: Dict[str, Any]
+            env: 'Optional[Dict[str, Any]]' = None,
+            **kwargs: 'Dict[str, Any]'
     ) -> None:
         # dump arguments into dictionary
         inputs = locals()
@@ -45,11 +45,11 @@ class CommandBaseAnsible(CommandBase):
         self._ansible_args: List[str] = ansible_args if ansible_args is not None else []
 
     @property
-    def ansible_args(self) -> List[str]:
+    def ansible_args(self) -> 'List[str]':
         return self._ansible_args
 
     @ansible_args.setter
-    def ansible_args(self, args: List[str]) -> None:
+    def ansible_args(self, args: 'List[str]') -> None:
         self._ansible_args = args
 
     def __str__(self):
@@ -63,9 +63,9 @@ class CommandBaseAnsible(CommandBase):
     @staticmethod
     def convert(
             c: CommandBase,
-            path_to_exec: Optional[Union[str, bytes, PathLike]] = "ansible",
-            ansible_args: Optional[List[str]] = None,
-            ansible_module: Optional[str] = None
+            path_to_exec: 'Optional[Union[str, bytes, PathLike]]' = "ansible",
+            ansible_args: 'Optional[List[str]]' = None,
+            ansible_module: 'Optional[str]' = None
     ) -> 'CommandBaseAnsible':
         if isinstance(c, CommandBaseAnsible):
             c.ansible_args = ansible_args
