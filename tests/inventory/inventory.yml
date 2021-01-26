@@ -1,0 +1,48 @@
+all:
+  hosts:
+    alenka:
+      ansible_host: 10.0.134.23
+      ansible_user: buildadm
+    jenicek:
+      ansible_host: 10.0.135.221
+      ansible_user: buildadm
+    marenka:
+      ansible_host: 10.0.135.160
+      ansible_user: buildadm
+    pikacu:
+      ansible_host: 10.0.134.70
+      ansible_user: buildadm
+    localhost:
+      ansible_host: 127.0.0.1
+      executor: local
+  children:
+    brokers:
+      hosts:
+        alenka:
+        jenicek:
+        marenka:
+      vars:
+        implementation: artemis
+        broker-name: artemis
+        version: 7.7.0
+        broker-path: /home/buildadm/broker/instance
+    clients:
+      hosts:
+        alenka:
+        marenka:
+        pikacu:
+      vars:
+        implementation: java
+        client-path: /home/buildadm/clients/
+  vars:
+    prefix: rvais
+    key_name: cci
+    network: provider_net_cci_1
+    image: rhel-7.6-server-x86_64-latest
+    flavor: m1.medium
+    executor: ssh
+
+# rvais_iqa_test_instance-1	- 10.0.134.23
+# rvais_iqa_test_instance-2	- 10.0.135.221
+# rvais_iqa_test_instance-3	- 10.0.135.160
+# rvais_iqa_test_instance-4	- 10.0.134.70
