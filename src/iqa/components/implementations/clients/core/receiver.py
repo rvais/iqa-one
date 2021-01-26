@@ -11,12 +11,12 @@ if TYPE_CHECKING:
 class ReceiverCore(CoreMessagingClient, Receiver):
     """Core python receiver client."""
 
-    def __init__(self, name: str, node: Node) -> None:
+    def __init__(self, name: str, node: 'Node') -> None:
         super(ReceiverCore, self).__init__(name, node)
         #  TODO - Define what kind of object the core receiver is
         #   going to use (maybe the default for python ext. client)
 
-    def set_endpoint(self, listener: Listener) -> None:
+    def set_endpoint(self, listener: 'Listener') -> None:
         pass
 
     def connect(self) -> bool:
