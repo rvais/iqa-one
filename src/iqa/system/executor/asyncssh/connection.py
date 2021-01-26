@@ -51,7 +51,7 @@ class ConnectionAsyncSsh(ConnectionBase):
 
         return session
 
-    async def run(self, command: str) -> Coroutine:
+    async def run(self, command: str) -> 'Coroutine':
         self._logger.info('Host {}: Running command "{}"'.format(self._host, command))
         result = await self._conn.run(command, check=True)
         self._logger.info('Host {}: command result"{}"'.format(self._host, result.stdout))

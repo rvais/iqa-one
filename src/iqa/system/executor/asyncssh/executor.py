@@ -11,10 +11,8 @@ if TYPE_CHECKING:
 class ExecutorAsyncSsh(ExecutorBase):
     """ Executor implementation for AsyncSSH client
     """
-    implementation: str = "asyncssh"
-    name: str = 'Executor class for asynchronous SSH execution'
 
-    def __init__(self, host: str, port: int = 22, user: str = 'root', password: Optional[str] = None, **kwargs) -> None:
+    def __init__(self, host: str, port: int = 22, user: str = 'root', password: 'Optional[str]' = None, **kwargs) -> None:
 
         super(ExecutorAsyncSsh).__init__(**kwargs)
         self._host: str = host
@@ -22,6 +20,14 @@ class ExecutorAsyncSsh(ExecutorBase):
         self._user: str = user
         self._password: Optional[str] = password
         self.connection: Optional[ConnectionAsyncSsh] = None
+
+    @staticmethod
+    def implementation() -> str:
+        return "asyncssh"
+
+    @property
+    def name(self) -> str:
+        return 'Executor class for asynchronous SSH execution'
 
     async def __aenter__(self):
         await self._connect()
@@ -48,7 +54,7 @@ class ExecutorAsyncSsh(ExecutorBase):
         )
         self.connection = await con.connect()
 
-    def _execute(self, command: CommandBase):
+    def _execute(self, command: 'CommandBase'):
         cmd = " ".join(command.args)
         return self._send(cmd)
 

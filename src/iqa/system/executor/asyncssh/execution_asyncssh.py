@@ -25,8 +25,8 @@ class ExecutionAsyncSsh(ExecutionBase):
     def terminate(self) -> None:
         raise NotImplemented
 
-    def read_stdout(self, lines: bool = False, closefd: bool = True) -> Optional[Union[str, List[str]]]:
+    def read_stdout(self, lines: bool = False, closefd: bool = True) -> 'Optional[Union[str, List[str]]]':
         raise NotImplemented
 
-    def read_stderr(self, lines: bool = False, closefd: bool = True) -> Optional[Union[str, List[str]]]:
+    def read_stderr(self, lines: bool = False, closefd: bool = True) -> 'Optional[Union[str, List[str]]]':
         raise NotImplemented
