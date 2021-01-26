@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 
 import requests
 from requests import RequestException
+from requests import Response
 
 if TYPE_CHECKING:
     from typing import Optional
@@ -78,7 +79,7 @@ class ArtemisJolokiaClient(object):
     """
 
     def __init__(
-        self, broker_name: str, ip: Optional[str], port: str, user: str, password: str
+        self, broker_name: str, ip: 'Optional[str]', port: str, user: str, password: str
     ) -> None:
         # Internal only
         self._ip: Optional[str] = ip
