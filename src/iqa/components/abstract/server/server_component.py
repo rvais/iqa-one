@@ -20,10 +20,10 @@ class ServerComponent(Component):
     def __init__(
         self,
         name: str,
-        node: Node,
-        service: Optional[Service] = None,
-        listeners: Optional[List[Listener]] = None,
-        configuration: Optional[Configuration] = None,
+        node: 'Node',
+        service: 'Optional[Service]' = None,
+        listeners: 'Optional[List[Listener]]' = None,
+        configuration: 'Optional[Configuration]' = None,
         **kwargs
     ) -> None:
         super(ServerComponent, self).__init__(name, node)
@@ -32,17 +32,17 @@ class ServerComponent(Component):
         self.listeners: List[Listener] = listeners if listeners is not None else []
 
     @abstractmethod
-    def _get_management_client(self) -> ManagementClient:
+    def _get_management_client(self) -> 'ManagementClient':
         raise NotImplemented
 
-    def get_management_client(self) -> ManagementClient:
+    def get_management_client(self) -> 'ManagementClient':
         client = getattr(self, "_management_client", None)
         if client is None:
             return self._get_management_client()
         return client
 
     @property
-    def management_client(self) -> ManagementClient:
+    def management_client(self) -> 'ManagementClient':
         return self.get_management_client()
 
     @property
@@ -50,5 +50,5 @@ class ServerComponent(Component):
         raise NotImplementedError
 
     @property
-    def service(self) -> Optional[Service]:
+    def service(self) -> 'Optional[Service]':
         return self._service
