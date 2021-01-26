@@ -33,10 +33,10 @@ class ExecutionBase(ABC):
 
     def __init__(
             self,
-            command: CommandBase,
-            executor: Optional[ExecutorBase] = None,
-            modified_args: Optional[List[str]] = None,
-            env: Optional[dict] = None
+            command: 'CommandBase',
+            executor: 'Optional[ExecutorBase]' = None,
+            modified_args: 'Optional[List[str]]' = None,
+            env: 'Optional[dict]' = None
     ) -> None:
         """
         Instance is initialized with command that was effectively
@@ -93,7 +93,7 @@ class ExecutionBase(ABC):
         return self._fd_stderr
 
     @abstractmethod
-    async def _run(self) -> None:
+    def _run(self) -> None:
         """
         Executes the command with different execution strategies (subprocess or others).
         :return:
@@ -101,7 +101,7 @@ class ExecutionBase(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def wait(self) -> None:
+    def wait(self) -> None:
         """
         Waits for command execution to complete.
         :return:
@@ -174,7 +174,7 @@ class ExecutionBase(ABC):
             self._timeout.interrupt()
 
     # TODO(rvais): reimplement read operations using yield if appropriate
-    def read_stdout(self, lines: bool = False, closefd: bool = True) -> Optional[Union[str, List[str]]]:
+    def read_stdout(self, lines: bool = False, closefd: bool = True) -> 'Optional[Union[str, List[str]]]':
         """
         Returns a string with the whole STDOUT content if the original
         command has stdout property defined as True. Otherwise
@@ -198,7 +198,7 @@ class ExecutionBase(ABC):
 
         return self._stdout.read()
 
-    def read_stderr(self, lines: bool = False, closefd: bool = True) -> Optional[Union[str, List[str]]]:
+    def read_stderr(self, lines: bool = False, closefd: bool = True) -> 'Optional[Union[str, List[str]]]':
         """
         Returns a string with the whole STDERR content if the original
         command has stderr property defined as True. Otherwise

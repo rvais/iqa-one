@@ -17,14 +17,21 @@ class ExecutorBase(ABC):
     running a given Command instance similarly across different
     implementations.
     """
-    implementation: str = NotImplementedError
-    name: str = 'Abstract Executor class'
 
     def __init__(self, **kwargs) -> None:
         self._logger: logging.Logger = logger
-        self._executions: List[ExecutionBase] = []
+        self._executions: 'List[ExecutionBase]' = []
+        self._name: str = 'Abstract Executor class'
 
-    async def execute(self, command: CommandBase) -> ExecutionBase:
+    @staticmethod
+    def implementation() -> str:
+        return NotImplemented
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    def execute(self, command: CommandBase) -> 'ExecutionBase':
         """
         Executes the given command differently based on
         concrete implementation of this generic Executor.
@@ -42,7 +49,7 @@ class ExecutorBase(ABC):
         self._logger.debug(
             'Executing command with [%s] - %s' % (self.__class__.__name__, command.args)
         )
-        execution: ExecutionBase = await self._execute(command)
+        execution: ExecutionBase = self._execute(command)
 
         # Processing post-execution hooks
         # await command.on_post_execution(execution)
@@ -51,7 +58,7 @@ class ExecutorBase(ABC):
         return execution
 
     @abstractmethod
-    async def _execute(self, command: CommandBase) -> ExecutionBase:
+    def _execute(self, command: CommandBase) -> 'ExecutionBase':
         """
         Abstract method that must be implemented by child classes.
         :param command:
@@ -60,5 +67,5 @@ class ExecutorBase(ABC):
         raise NotImplementedError
 
     @staticmethod
-    def get_preferred_command_base() -> Type[CommandBase]:
+    def get_preferred_command_base() -> 'Type[CommandBase]':
         return CommandBase
