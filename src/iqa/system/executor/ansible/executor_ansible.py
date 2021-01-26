@@ -18,18 +18,15 @@ class ExecutorAnsible(ExecutorBase):
     Executes the given command using Ansible.
     """
 
-    implementation = 'ansible'
-    name: str = 'Ansible executor class'
-
     def __init__(
         self,
-        ansible_host: Optional[str] = None,
-        inventory: Optional[str] = None,
-        ansible_user: Optional[str] = None,
+        ansible_host: 'Optional[str]' = None,
+        inventory: 'Optional[str]' = None,
+        ansible_user: 'Optional[str]' = None,
         ansible_connection: str = 'ssh',
         module: str = 'raw',
         executor_name: str = 'ExecutorAnsible',
-        docker_host: Optional[str] = None,
+        docker_host: 'Optional[str]' = None,
         **kwargs
     ) -> None:
         """
@@ -53,7 +50,15 @@ class ExecutorAnsible(ExecutorBase):
         self.name: str = executor_name
         self.docker_host: str = docker_host
 
-    def _execute(self, command: CommandBase) -> ExecutionProcess:
+    @staticmethod
+    def implementation() -> str:
+        return 'ansible'
+
+    @property
+    def name(self) -> str:
+        return 'Ansible executor class'
+
+    def _execute(self, command: 'CommandBase') -> 'ExecutionProcess':
         command = CommandBaseAnsible.convert(command, ansible_module=self.module)
 
         ansible_args: list = []
@@ -82,5 +87,5 @@ class ExecutorAnsible(ExecutorBase):
         return ExecutionProcess(command, executor=self, modified_args=ansible_args)
 
     @staticmethod
-    def get_preferred_command_base() -> Type[CommandBase]:
+    def get_preferred_command_base() -> 'Type[CommandBase]':
         return CommandBaseAnsible
