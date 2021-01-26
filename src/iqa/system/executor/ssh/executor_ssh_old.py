@@ -29,7 +29,7 @@ class ExecutorSshOld(ExecutorBase):
         hostname: str,
         port: str = '22',
         user: str = 'root',
-        ssl_private_key: Optional[str] = None,
+        ssl_private_key: 'Optional[str]' = None,
         name: str = 'ExecutorSsh',
         **kwargs
     ) -> None:
@@ -42,7 +42,7 @@ class ExecutorSshOld(ExecutorBase):
             'executor_ssl_private_key', ssl_private_key
         )
 
-    def _execute(self, command: CommandBase) -> ExecutionProcess:
+    def _execute(self, command: 'CommandBase') -> ExecutionProcess:
         ssh_args: list = ['ssh', '-p', '%s' % self.port]
 
         # If an SSL private key given, use it
