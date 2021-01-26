@@ -35,7 +35,7 @@ class PythonConnectorClientCommand(ConnectorClientCommand):
 
     def __init__(
         self,
-        path_to_exec: Optional[PathLike[Any]] = None,
+        path_to_exec: 'Optional[PathLike[Any]]' = None,
         stdout: bool = False,
         stderr: bool = False,
         daemon: bool = False,
@@ -48,7 +48,7 @@ class PythonConnectorClientCommand(ConnectorClientCommand):
         self.control: PythonControlOptionsCommon = PythonControlOptionsCommon()
         self.connection: PythonConnectionOptionsCommon = PythonConnectionOptionsCommon()
 
-    def main_command(self) -> list:
+    def main_command(self) -> 'List[str]':
         executable: str = 'cli-proton-python-connector'
         if self.path_to_exec:
             executable = os_path.join(self.path_to_exec, executable)
@@ -64,7 +64,7 @@ class PythonReceiverClientCommand(ReceiverClientCommand):
 
     def __init__(
         self,
-        path_to_exec: Optional[PathLike[Any]] = None,
+        path_to_exec: 'Optional[PathLike[Any]]' = None,
         stdout: bool = False,
         stderr: bool = False,
         daemon: bool = False,
@@ -79,7 +79,7 @@ class PythonReceiverClientCommand(ReceiverClientCommand):
         self.reactor: ReactorOptionsSenderReceiver = ReactorOptionsSenderReceiver()
         self.connection: PythonConnectionOptionsCommon = PythonConnectionOptionsCommon()
 
-    def main_command(self) -> List[str]:
+    def main_command(self) -> 'List[str]':
         executable: str = 'cli-proton-python-receiver'
         if self.path_to_exec:
             executable = os_path.join(self.path_to_exec, executable)
@@ -95,7 +95,7 @@ class PythonSenderClientCommand(SenderClientCommand):
 
     def __init__(
         self,
-        path_to_exec: Optional[PathLike[Any]] = None,
+        path_to_exec: 'Optional[PathLike[Any]]' = None,
         stdout: bool = False,
         stderr: bool = False,
         daemon: bool = False,
@@ -110,7 +110,7 @@ class PythonSenderClientCommand(SenderClientCommand):
         self.reactor: ReactorOptionsSenderReceiver = ReactorOptionsSenderReceiver()
         self.connection: PythonConnectionOptionsCommon = PythonConnectionOptionsCommon()
 
-    def main_command(self) -> List[str]:
+    def main_command(self) -> 'List[str]':
         executable: str = 'cli-proton-python-sender'
         if self.path_to_exec:
             executable = os_path.join(self.path_to_exec, executable)

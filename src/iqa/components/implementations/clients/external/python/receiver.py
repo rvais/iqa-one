@@ -16,9 +16,9 @@ class ReceiverPython(ClientPython, Receiver):
     """External Python-Proton receiver client."""
 
     _command: PythonReceiverClientCommand
-    path_to_exec: Optional[PathLike[Any]]
+    path_to_exec: 'Optional[PathLike[Any]]'
 
-    def __init__(self, name: str, node: Node, path_to_exec: Optional[PathLike[Any]] = None, **kwargs) -> None:
+    def __init__(self, name: str, node: 'Node', path_to_exec: 'Optional[PathLike[Any]]' = None, **kwargs) -> None:
         super(ReceiverPython, self).__init__(name, node, **kwargs)
         self.path_to_exec = path_to_exec
 
@@ -27,17 +27,6 @@ class ReceiverPython(ClientPython, Receiver):
 
     def set_auth_mechs(self, mechs: str) -> None:
         self._command.connection.conn_allowed_mechs = mechs
-
-    def set_ssl_auth(
-        self,
-        pem_file: str = None,
-        key_file: str = None,
-        keystore: str = None,
-        keystore_pass: str = None,
-        keystore_alias: str = None,
-    ) -> None:
-        self._command.connection.conn_ssl_certificate = pem_file
-        self._command.connection.conn_ssl_private_key = key_file
 
     def _new_command(
         self,

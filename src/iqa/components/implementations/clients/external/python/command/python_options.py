@@ -26,16 +26,16 @@ class PythonControlOptionsCommon(ControlOptionsCommon):
         self,
         broker_url: str = '127.0.0.1:5672',
         count: int = 1,
-        timeout: Optional[int] = None,
-        sync_mode: Optional[str] = None,
-        close_sleep: Optional[int] = None,
+        timeout: 'Optional[int]' = None,
+        sync_mode: 'Optional[str]' = None,
+        close_sleep: 'Optional[int]' = None,
     ) -> None:
         super(PythonControlOptionsCommon, self).__init__(
             count, timeout, sync_mode, close_sleep
         )
         self.broker_url: str = broker_url
 
-    def valid_options(self) -> List[Union[Toggle, Prefixed, KWOption, ListOption]]:
+    def valid_options(self) -> 'List[Union[Toggle, Prefixed, KWOption, ListOption]]':
         return ControlOptionsCommon.valid_options(self) + [
             Prefixed('broker-url', '--broker-url')
         ]
@@ -52,12 +52,12 @@ class PythonControlOptionsSenderReceiver(
         self,
         broker_url: str = '127.0.0.1:5672/examples',
         count: int = 1,
-        timeout: Optional[int] = None,
-        sync_mode: Optional[str] = None,
-        close_sleep: Optional[int] = None,
-        duration: Optional[int] = None,
-        duration_mode: Optional[str] = None,
-        capacity: Optional[int] = None,
+        timeout: 'Optional[int]' = None,
+        sync_mode: 'Optional[str]' = None,
+        close_sleep: 'Optional[int]' = None,
+        duration: 'Optional[int]' = None,
+        duration_mode: 'Optional[str]' = None,
+        capacity: 'Optional[int]' = None,
     ) -> None:
         ControlOptionsSenderReceiver.__init__(
             self, duration=duration, duration_mode=duration_mode, capacity=capacity
@@ -83,11 +83,11 @@ class PythonControlOptionsReceiver(
         self,
         broker_url: str = '127.0.0.1:5672/examples',
         count: int = 1,
-        timeout: Optional[int] = None,
-        sync_mode: Optional[str] = None,
-        duration: Optional[int] = None,
-        duration_mode: Optional[str] = None,
-        capacity: Optional[int] = None,
+        timeout: 'Optional[int]' = None,
+        sync_mode: 'Optional[str]' = None,
+        duration: 'Optional[int]' = None,
+        duration_mode: 'Optional[str]' = None,
+        capacity: 'Optional[int]' = None,
         dynamic: bool = False,
     ) -> None:
         ControlOptionsReceiver.__init__(self, dynamic=dynamic)
@@ -106,16 +106,16 @@ class PythonControlOptionsReceiver(
 class PythonConnectionOptionsCommon(ConnectionOptionsCommon):
     def __init__(
         self,
-        conn_allowed_mechs: Optional[str] = None,
-        conn_ssl_certificate: Optional[str] = None,
-        conn_ssl_private_key: Optional[str] = None,
-        urls: Optional[str] = None,
-        reconnect: Optional[bool] = None,
-        reconnect_interval: Optional[int] = None,
-        reconnect_limit: Optional[int] = None,
-        reconnect_timeout: Optional[int] = None,
-        heartbeat: Optional[int] = None,
-        max_frame_size: Optional[int] = None,
+        conn_allowed_mechs: 'Optional[str]' = None,
+        conn_ssl_certificate: 'Optional[str]' = None,
+        conn_ssl_private_key: 'Optional[str]' = None,
+        urls: 'Optional[str]' = None,
+        reconnect: 'Optional[bool]' = None,
+        reconnect_interval: 'Optional[int]' = None,
+        reconnect_limit: 'Optional[int]' = None,
+        reconnect_timeout: 'Optional[int]' = None,
+        heartbeat: 'Optional[int]' = None,
+        max_frame_size: 'Optional[int]' = None,
     ) -> None:
         ConnectionOptionsCommon.__init__(
             self,
@@ -131,7 +131,7 @@ class PythonConnectionOptionsCommon(ConnectionOptionsCommon):
         self.conn_ssl_certificate: Optional[str] = conn_ssl_certificate
         self.conn_ssl_private_key: Optional[str] = conn_ssl_private_key
 
-    def valid_options(self) -> List[Union[Toggle, Prefixed, KWOption, ListOption]]:
+    def valid_options(self) -> 'List[Union[Toggle, Prefixed, KWOption, ListOption]]':
         return ConnectionOptionsCommon.valid_options(self) + [
             Prefixed('conn-allowed-mechs', '--conn-allowed-mechs'),
             Prefixed('conn-ssl-certificate', '--conn-ssl-certificate'),

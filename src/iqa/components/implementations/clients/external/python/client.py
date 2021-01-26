@@ -12,11 +12,11 @@ if TYPE_CHECKING:
 class ClientPython(ClientExternal):
     """Python Proton client (base abstract class)."""
 
-    supported_protocols: List[Protocol] = [Protocol.AMQP10]
+    supported_protocols: 'List[Protocol]' = [Protocol.AMQP10]
     implementation: str = 'python'
     version: str = '1.0.1'
 
-    def __init__(self, name: str, node: Node, **kwargs) -> None:
+    def __init__(self, name: str, node: 'Node', **kwargs) -> None:
         super(ClientPython, self).__init__(name, node, **kwargs)
 
     def _new_command(
@@ -26,7 +26,7 @@ class ClientPython(ClientExternal):
         daemon: bool = False,
         timeout: int = 0,
         encoding: str = 'utf-8',
-    ) -> ClientCommandBase:
+    ) -> 'ClientCommandBase':
         raise NotImplemented
 
     def _set_url(self, url: str):
@@ -37,15 +37,16 @@ class ClientPython(ClientExternal):
 
     def set_ssl_auth(
         self,
-        pem_file: Optional[str] = None,
-        key_file: Optional[str] = None,
-        keystore: Optional[str] = None,
-        keystore_pass: Optional[str] = None,
-        keystore_alias: Optional[str] = None,
-    ):
-        pass
+        pem_file: 'Optional[str]' = None,
+        key_file: 'Optional[str]' = None,
+        keystore: 'Optional[str]' = None,
+        keystore_pass: 'Optional[str]' = None,
+        keystore_alias: 'Optional[str]' = None,
+    ) -> None:
+        self._command.connection.conn_ssl_certificate = pem_file
+        self._command.connection.conn_ssl_private_key = key_file
 
-    def set_endpoint(self, listener: Listener):
+    def set_endpoint(self, listener: 'Listener'):
         pass
 
     def connect(self):
