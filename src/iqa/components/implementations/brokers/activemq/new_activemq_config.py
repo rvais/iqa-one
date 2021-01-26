@@ -30,13 +30,13 @@ class ArtemisConfig(Configuration):
         profile_name: str = DEFAULT_PROFILE_NAME,
         profile_path_format: str = PROFILE_PATH_FORMAT,
         broker_name: str = DEFAULT_INSTANCE_NAME,
-        broker_home: Optional[Union[str, bytes, PathLike]] = DEFAULT_HOME,
-        broker_instance: Optional[Union[str, bytes, PathLike]] = DEFAULT_INSTANCE_HOME,
+        broker_home: 'Optional[Union[str, bytes, PathLike]]' = DEFAULT_HOME,
+        broker_instance: 'Optional[Union[str, bytes, PathLike]]' = DEFAULT_INSTANCE_HOME,
         load_immediately: bool = False,
-        config_files: Optional[Union[Union[str, bytes, PathLike], List[Union[str, bytes, PathLike]]]] = None,
-        profile_path: Optional[Union[str, bytes, PathLike]] = None,
-        output_path: Optional[Union[str, bytes, PathLike]] = None,
-        config_dir: Optional[Union[str, bytes, PathLike]] = None,
+        config_files: 'Optional[Union[Union[str, bytes, PathLike], List[Union[str, bytes, PathLike]]]]' = None,
+        profile_path: 'Optional[Union[str, bytes, PathLike]]' = None,
+        output_path: 'Optional[Union[str, bytes, PathLike]]' = None,
+        config_dir: 'Optional[Union[str, bytes, PathLike]]' = None,
         **kwargs
     ) -> None:
         if profile_path is None:
@@ -64,7 +64,7 @@ class ArtemisConfig(Configuration):
         super(ArtemisConfig, self)._create_defaults()
 
     @property
-    def default_config_file(self) -> Union[Union[str, bytes, PathLike]]:
+    def default_config_file(self) -> 'Union[str, bytes, PathLike]':
         return os.path.join(
             self.output_path, '%s.%s' % (self.DEFAULT_TUNING_FILE, self.default_config_file_extension)
         )
