@@ -1,4 +1,4 @@
-from iqa.components.brokers.broker_config import BrokerConfiguration
+from iqa.components.implementations.brokers.broker_config import BrokerConfiguration
 
 
 class ActiveMQConfig(BrokerConfiguration):
