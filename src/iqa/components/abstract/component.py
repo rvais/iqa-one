@@ -1,6 +1,9 @@
 from inspect import signature
+from typing import TYPE_CHECKING
 
-from iqa.system.node.base.node import Node
+if TYPE_CHECKING:
+    from typing import Optional
+    from iqa.system.node.base.node import Node
 
 
 class Component:
@@ -8,13 +11,17 @@ class Component:
     Main class that represents a abstract component.
     """
 
-    def __init__(self, name: str, node: Node) -> None:
+    def __init__(self, name: str, node: 'Node') -> None:
         self.instance_name: str = name
-        self.node: Node = node
+        self._node: Node = node
 
     @property
     def implementation(self):
         raise NotImplementedError
+
+    @property
+    def node(self) -> 'Optional[Node]':
+        return self._node
 
     @staticmethod
     def call_if_all_arguments_in_kwargs(func, **kwargs) -> None:
