@@ -15,9 +15,9 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import Optional, List, Union
     from iqa.system.command.command_base import CommandBase
+    from iqa.system.executor.base.executor import ExecutorBase
 
 from iqa.system.executor.base.execution import ExecutionBase, ExecutionException
-from iqa.system.executor.kubernetes.executor_kubernetes import ExecutorKubernetes
 
 # Logger for ExecutionKubernetes
 logger: logging.Logger = logging.getLogger(__name__)
@@ -32,10 +32,10 @@ class ExecutionKubernetes(ExecutionBase):
 
     def __init__(
         self,
-        command: CommandBase,
-        executor: ExecutorKubernetes,
-        modified_args: Optional[List[str]] = None,
-        env: Optional[dict] = None,
+        command: 'CommandBase',
+        executor: 'Optional[ExecutorBase]',
+        modified_args: 'Optional[List[str]]' = None,
+        env: 'Optional[Dict]' = None,
     ) -> None:
         """
         Instance is initialized with a command that was effectively
@@ -107,7 +107,7 @@ class ExecutionKubernetes(ExecutionBase):
         the process is considered as done and if a TimeoutCallback has been set, then it will be canceled.
         :return:
         """
-        self.executor: ExecutorKubernetes  # necessary type casting
+        self.executor: ExecutorBase  # necessary type casting
 
         try:
             logger.debug('Retrieving PODs')
@@ -198,7 +198,7 @@ class ExecutionKubernetes(ExecutionBase):
         if self.response and self.response.is_open():
             self.response.close()
 
-    def read_stdout(self, lines: bool = False, closefd: bool = True) -> Optional[Union[str, List[str]]]:
+    def read_stdout(self, lines: bool = False, closefd: bool = True) -> 'Optional[Union[str, List[str]]]':
         """
         Reads data from WSClient stdout channel and append it to internal temporary file.
         Then it returns all data collected from stdout.
@@ -220,7 +220,7 @@ class ExecutionKubernetes(ExecutionBase):
 
         return self._read_temp_file(self._stdout, lines)
 
-    def read_stderr(self, lines: bool = False, closefd: bool = True) -> Optional[Union[str, List[str]]]:
+    def read_stderr(self, lines: bool = False, closefd: bool = True) -> 'Optional[Union[str, List[str]]]':
         """
         Reads data from WSClient stderr channel and append it to internal temporary file.
         Then it returns all data collected from stderr.

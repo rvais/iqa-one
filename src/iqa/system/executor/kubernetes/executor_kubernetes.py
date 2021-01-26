@@ -13,8 +13,6 @@ class ExecutorKubernetes(ExecutorBase):
     Executor that can be used to run Commands in a Pod running on a Kubernetes cluster.
     This Executor uses the ExecutionKubernetes to run commands through the Kubernetes Client API.
     """
-    implementation: str = "kubernetes"
-    name: str = 'Kubernetes executor class'
 
     def __init__(self, **kwargs) -> None:
         """
@@ -36,6 +34,7 @@ class ExecutorKubernetes(ExecutorBase):
                 and authorization. The `executor_kubernetes_host` is also required when a token is defined.
         """
         super(ExecutorKubernetes, self).__init__(**kwargs)
+        self._name: str = 'Kubernetes executor class'
 
         # Kubernetes config file - defaults to $HOME/.kube/config
         self.config: str = kwargs.get(
@@ -67,9 +66,9 @@ class ExecutorKubernetes(ExecutorBase):
         # If your selector returns multiple pods, only the first matching one will be used.
         self.selector: str = kwargs.get('executor_kubernetes_selector', None)
 
-    @property
-    def implementation(self) -> str:
+    @staticmethod
+    def implementation() -> str:
         return 'kubernetes'
 
-    def _execute(self, command: CommandBase):
+    def _execute(self, command: 'CommandBase'):
         return ExecutionKubernetes(command, self)
