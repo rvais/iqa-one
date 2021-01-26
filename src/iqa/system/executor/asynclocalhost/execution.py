@@ -2,13 +2,13 @@ import asyncio
 import logging
 from asyncio.subprocess import Process
 
-from iqa.system.command.command_base import CommandBase
 from iqa.system.executor.base.execution import ExecutionBase
 
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from typing import Optional, List
+    from iqa.system.command.command_base import CommandBase
     from iqa.system.executor.base.executor import ExecutorBase
 
 logger = logging.getLogger(__name__)
@@ -28,10 +28,10 @@ class ExecutionAsyncio(ExecutionBase):
 
     def __init__(
             self,
-            command: CommandBase,
-            executor: Optional[ExecutorBase] = None,
-            modified_args: Optional[List[str]] = None,
-            env: Optional[dict] = None
+            command: 'CommandBase',
+            executor: 'Optional[ExecutorBase]' = None,
+            modified_args: 'Optional[List[str]]' = None,
+            env: 'Optional[dict]' = None
     ) -> None:
         """
         Instance is initialized with a command that was effectively
