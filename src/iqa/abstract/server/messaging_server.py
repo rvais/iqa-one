@@ -14,5 +14,5 @@ class MessagingServer(ABC):
         self.connectors: List[Any] = []
 
     @abstractmethod
-    def get_url(self, port: Optional[int] = None, listener: Optional[Listener] = None) -> str:
-        return NotImplemented
+    def get_url(self, port: 'Optional[int]' = None, listener: 'Optional[Listener]' = None) -> str:
+        raise NotImplemented
