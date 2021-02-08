@@ -16,7 +16,7 @@ class Component(ABC):
     def __init__(self, name: 'Optional[str]' = None, node: 'Optional[Node]' = None, **kwargs) -> None:
         self._instance_name: str = name
         self._node: Node = node
-        self._logger: logging.Logger = logging.getLogger()
+        self._logger: logging.Logger = logging.getLogger(self.__name__)
 
     @property
     @abstractmethod
