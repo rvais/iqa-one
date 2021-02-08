@@ -16,9 +16,9 @@ class Receiver(MessagingClient):
         recv_messages: list = self._receive()
 
         if self.message_buffer:
-            self.messages.extend(recv_messages)  # multiple Messages
+            self._messages.extend(recv_messages)  # multiple Messages
 
-        self.message_counter += len(recv_messages)
+        self._message_counter += len(recv_messages)
 
     @abstractmethod
     def _receive(self):

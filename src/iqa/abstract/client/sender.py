@@ -2,9 +2,10 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING
 
 from iqa.abstract.client.messaging_client import MessagingClient
+from iqa.abstract.message.message import Message
 
 if TYPE_CHECKING:
-    from iqa.abstract.message.message import Message
+    from typing import Union, List
 
 
 class Sender(MessagingClient):
@@ -14,17 +15,20 @@ class Sender(MessagingClient):
         super(Sender, self).__init__(**kwargs)
         # Sender settings
 
-    def send(self, message: 'Message', **kwargs) -> None:
+    def send(self, messages: 'Union[Message, List[Message]]', **kwargs) -> None:
         """Method for sending a message.
-        :param message: Message to be sent
+        :param messages: Message or list of messages to be sent
         :type: iqa.iqa.abstract.message.Message
         """
-        if self.message_buffer:
-            self.messages.append(message)  # single sent Message
+        if isinstance(messages, Message):
+            messages = [messages]
 
-        self.message_counter += 1
-        self._send(message, **kwargs)
+        if self.message_buffer:
+            self._messages.extend(messages)  # single sent Message
+
+        self._message_counter += 1
+        self._send(messages, **kwargs)
 
     @abstractmethod
-    def _send(self, message: 'Message', **kwargs) -> None:
+    def _send(self, messages: 'Union[Message, List[Message]]', **kwargs) -> None:
         raise NotImplementedError
