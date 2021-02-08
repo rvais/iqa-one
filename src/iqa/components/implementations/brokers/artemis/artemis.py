@@ -62,11 +62,8 @@ class Artemis(ServerComponent, Broker):
         self._queues: List[Queue] = list()
         self._addresses: List[Address] = list()
         self._addresses_dict: dict = {}
-        self.configuration: ArtemisConfig = ArtemisConfig(self, **kwargs)
-        self.configuration.create_configuration(
-            kwargs.get('inventory_file', 'inventory.yml')
-        )
-
+        self.configuration: ArtemisConfig = ArtemisConfig(**kwargs)
+        self.configuration.create_defaults()
         self._management_client: ArtemisJolokiaClient = self._get_management_client()
 
     @property
@@ -215,14 +212,15 @@ class Artemis(ServerComponent, Broker):
         Creates a new instance of the Jolokia Client.
         :return:
         """
-        client = ArtemisJolokiaClient(
-            self.configuration.instance_name,  # type: ignore
-            self.node.ip,
-            self.configuration.ports['web'],
-            'admin',
-            self.configuration.get_user_password('admin'),
-        )
-        return client
+        # client = ArtemisJolokiaClient(
+        #     self.configuration.instance_name,  # type: ignore
+        #     self.node.ip,
+        #     self.configuration.ports['web'],
+        #     'admin',
+        #     self.configuration.get_user_password('admin'),
+        # )
+        # return client
+        return None
 
     @staticmethod
     def _get_routing_type(routing_type: 'RoutingType') -> str:
