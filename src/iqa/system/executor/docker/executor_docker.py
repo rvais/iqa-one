@@ -7,7 +7,8 @@ from iqa.system.command.command_base import CommandBase
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Optional, List
+    from os import PathLike
+    from typing import Optional, List, Union, Dict
 
 """
 Executor instance that runs a given Command instance using
@@ -22,22 +23,33 @@ class ExecutorDocker(ExecutorBase):
 
     def __init__(
         self,
-        container_name: str,
-        user: 'Optional[str]' = None
-    ):
-        super(ExecutorDocker, self).__init__()
-        self.container_name: str = container_name
-        self.user: str = user
-        self.docker_host: str = ''
+        host: 'Optional[str]' = None,
+        port: 'Optional[int]' = None,
+        user: 'Optional[str]' = None,
+        password: 'Optional[str]' = None,
+        ssh_key_path: 'Optional[Union[str, bytes, PathLike]]' = None,
+        ssh_key_passphrase: 'Optional[Union[str, bytes, PathLike]]' = None,
+        known_hosts_path: 'Optional[Union[str, bytes, PathLike]]' = None,
+        container_name: 'Optional[str]' = None,
+        **kwargs
+    ) -> None:
+        args: Dict = locals()
+        del args["self"]
+        del args["kwargs"]
+        del args["__class__"]
+        kwargs.update(args)
+        super(ExecutorDocker, self).__init__(**kwargs)
+
+        missing = self._check_required_args(['container_name'], **kwargs)
+        if missing:
+            raise ValueError(f"One or more mandatory arguments are missing: [{', '.join(missing)}]")
+
+        self._container_name: str = container_name
         self._command: Optional[CommandBase] = None
 
     @staticmethod
     def implementation() -> str:
         return 'docker'
-
-    @property
-    def name(self) -> str:
-        return 'Docker CLI executor'
 
     def _command_inside_container(self, command: 'Optional[CommandBase]' = None, user: 'Optional[str]' = None):
 
@@ -45,10 +57,10 @@ class ExecutorDocker(ExecutorBase):
 
         if user:
             docker_args.extend(['-u', user])
-        elif self.user:
-            docker_args.extend(['-u', self.user])
+        elif self._user:
+            docker_args.extend(['-u', self._user])
 
-        docker_args.append(self.container_name)
+        docker_args.append(self._container_name)
 
         docker_args.extend(['sh', '-c', '"'])
         docker_args += command.args
@@ -137,8 +149,8 @@ class ExecutorDocker(ExecutorBase):
         # define environment when docker_host provided
 
         env = {**os.environ}
-        if self.docker_host:
-            env['DOCKER_HOST'] = self.docker_host
+        if self._host:
+            env['DOCKER_HOST'] = self._host
 
         # start with building command
         docker_cmd = ['docker']
