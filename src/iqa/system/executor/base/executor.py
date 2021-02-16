@@ -5,7 +5,8 @@ from typing import TYPE_CHECKING
 from iqa.system.command.command_base import CommandBase
 
 if TYPE_CHECKING:
-    from typing import List, Type
+    from os import PathLike
+    from typing import Optional, List, Type, Union
     from iqa.system.executor.base.execution import ExecutionBase
 
 from iqa.logger import logger
@@ -18,18 +19,36 @@ class ExecutorBase(ABC):
     implementations.
     """
 
-    def __init__(self, **kwargs) -> None:
+    def __init__(
+        self,
+        host: 'Optional[str]' = None,
+        port: 'Optional[int]' = None,
+        user: 'Optional[str]' = None,
+        password: 'Optional[str]' = None,
+        ssh_key_path: 'Optional[Union[str, bytes, PathLike]]' = None,
+        ssh_key_passphrase: 'Optional[Union[str, bytes, PathLike]]' = None,
+        known_hosts_path: 'Optional[Union[str, bytes, PathLike]]' = None,
+        **kwargs
+    ) -> None:
         self._logger: logging.Logger = logger
         self._executions: 'List[ExecutionBase]' = []
         self._name: str = 'Abstract Executor class'
 
+        self._host: Optional[str] = host
+        self._port: Optional[int] = port
+        self._user: Optional[str] = user
+        self._password: Optional[str] = password
+        self._ssh_key_path: Optional[Union[str, bytes, PathLike]] = ssh_key_path
+        self._ssh_key_passphrase: Optional[Union[str, bytes, PathLike]] = ssh_key_passphrase
+        self._known_hosts_path: Optional[Union[str, bytes, PathLike]] = known_hosts_path
+
+    @staticmethod
+    def _check_required_args(required: 'List[str]', **kwargs) -> 'List[str]':
+        return [x for x in required if x not in kwargs.keys() or kwargs[x] is None]
+
     @staticmethod
     def implementation() -> str:
         return NotImplemented
-
-    @property
-    def name(self) -> str:
-        return self._name
 
     def execute(self, command: CommandBase) -> 'ExecutionBase':
         """
