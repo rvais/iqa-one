@@ -4,7 +4,8 @@ from iqa.system.executor.base.executor import ExecutorBase
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Optional
+    from os import PathLike
+    from typing import Optional, Dict, Union
     from iqa.system.command.command_base import CommandBase
 
 
@@ -12,22 +13,33 @@ class ExecutorAsyncSsh(ExecutorBase):
     """ Executor implementation for AsyncSSH client
     """
 
-    def __init__(self, host: str, port: int = 22, user: str = 'root', password: 'Optional[str]' = None, **kwargs) -> None:
+    def __init__(
+        self,
+        host: 'Optional[str]' = None,
+        port: 'Optional[int]' = None,
+        user: 'Optional[str]' = None,
+        password: 'Optional[str]' = None,
+        ssh_key_path: 'Optional[Union[str, bytes, PathLike]]' = None,
+        ssh_key_passphrase: 'Optional[Union[str, bytes, PathLike]]' = None,
+        known_hosts_path: 'Optional[Union[str, bytes, PathLike]]' = None,
+        **kwargs
+    ) -> None:
+        args: Dict = locals()
+        del args["self"]
+        del args["kwargs"]
+        del args["__class__"]
+        kwargs.update(args)
+        super(ExecutorAsyncSsh, self).__init__(**kwargs)
 
-        super(ExecutorAsyncSsh).__init__(**kwargs)
-        self._host: str = host
-        self._port: int = port
-        self._user: str = user
-        self._password: Optional[str] = password
+        missing = self._check_required_args(['host'], **kwargs)
+        if missing:
+            raise ValueError(f"One or more mandatory arguments are missing: [{ ', '.join(missing)}]")
+
         self.connection: Optional[ConnectionAsyncSsh] = None
 
     @staticmethod
     def implementation() -> str:
         return "asyncssh"
-
-    @property
-    def name(self) -> str:
-        return 'Executor class for asynchronous SSH execution'
 
     async def __aenter__(self):
         await self._connect()
