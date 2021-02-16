@@ -5,6 +5,8 @@ from iqa.system.executor.kubernetes.execution_kubernetes import ExecutionKuberne
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from os import PathLike
+    from typing import Optional, Dict, Union
     from iqa.system.command.command_base import CommandBase
 
 
@@ -14,7 +16,22 @@ class ExecutorKubernetes(ExecutorBase):
     This Executor uses the ExecutionKubernetes to run commands through the Kubernetes Client API.
     """
 
-    def __init__(self, **kwargs) -> None:
+    def __init__(
+        self,
+        host: 'Optional[str]' = None,
+        port: 'Optional[int]' = None,
+        user: 'Optional[str]' = None,
+        password: 'Optional[str]' = None,
+        ssh_key_path: 'Optional[Union[str, bytes, PathLike]]' = None,
+        ssh_key_passphrase: 'Optional[Union[str, bytes, PathLike]]' = None,
+        known_hosts_path: 'Optional[Union[str, bytes, PathLike]]' = None,
+        kubernetes_config_path: 'Optional[Union[str, bytes, PathLike]]' = None,
+        kubernetes_namespace: 'Optional[str]' = None,
+        kubernetes_context: 'Optional[str]' = None,
+        kubernetes_token: 'Optional[str]' = None,
+        kubernetes_selector: 'Optional[str]' = None,
+        **kwargs
+    ) -> None:
         """
         :param kwargs:
             :keyword executors_kubernetes_config:
@@ -33,16 +50,24 @@ class ExecutorKubernetes(ExecutorBase):
                 If you do not want to use a context, you can provide a valid Token to use for authentication
                 and authorization. The `executor_kubernetes_host` is also required when a token is defined.
         """
+        args: Dict = locals()
+        del args["self"]
+        del args["kwargs"]
+        del args["__class__"]
+        kwargs.update(args)
         super(ExecutorKubernetes, self).__init__(**kwargs)
-        self._name: str = 'Kubernetes executor class'
+
+        missing = self._check_required_args(['host'], **kwargs)
+        if missing:
+            raise ValueError(f"One or more mandatory arguments are missing: [{ ', '.join(missing)}]")
 
         # Kubernetes config file - defaults to $HOME/.kube/config
-        self.config: str = kwargs.get(
-            'executor_kubernetes_config', os.environ['HOME'] + os.sep + '.kube/config'
+        self._config_path: 'Optional[Union[str, bytes, PathLike]]' = args.get(
+            'kubernetes_config_path', os.environ['HOME'] + os.sep + '.kube/config'
         )
 
         # Namespace to use for querying PODs
-        self.namespace: str = kwargs.get('executor_kubernetes_namespace', 'default')
+        self._namespace: 'Optional[str]' = args.get('kubernetes_namespace', 'default')
 
         #
         # You can provide the context to use (stored in the config file) if you don't
@@ -50,21 +75,18 @@ class ExecutorKubernetes(ExecutorBase):
         #
 
         # Context to use from kubernetes config (if not using current context or a host/token)
-        self.context: str = kwargs.get('executor_kubernetes_context', None)
+        self._context: 'Optional[str]' = kubernetes_context
 
         #
+        # Token if you are not using the context
         # When you do not want to use a context, you can also use a host/token pair
+        # host must be specified if not using context
         #
+        self._token: 'Optional[str]' = kubernetes_token
 
-        # Host (if not using context)
-        self.host: str = kwargs.get('executor_kubernetes_host', None)
-
-        # Token (if not using context)
-        self.token: str = kwargs.get('executor_kubernetes_token', None)
-
-        # Selector to match deployment pod that will be used for execution.
-        # If your selector returns multiple pods, only the first matching one will be used.
-        self.selector: str = kwargs.get('executor_kubernetes_selector', None)
+        # Selector to match deployment the pod which will be used for execution.
+        # If your selector returns multiple pods, only the first one matching will be used.
+        self._selector: 'Optional[str]' = kubernetes_selector
 
     @staticmethod
     def implementation() -> str:
