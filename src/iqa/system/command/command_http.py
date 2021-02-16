@@ -80,7 +80,7 @@ class CommandHTTP(CommandBase):
 
         # Process list of arguments
         for argument in args:
-            if argument is str:
+            if isinstance(argument, str):
                 argument = tuple(argument.split('=', 1))
 
             if isinstance(argument, tuple) and len(argument) == 2:
@@ -143,6 +143,7 @@ class CommandHTTP(CommandBase):
         if isinstance(c, CommandHTTP):
             c.url = url
             c.method_post = method_post
+            return c
 
         args: List[str] = c.args
         stdout: bool = c.stdout
