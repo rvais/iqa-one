@@ -5,7 +5,8 @@ from iqa.system.executor.base.executor import ExecutorBase
 from iqa.system.executor.localhost.execution_local import ExecutionProcess
 
 if TYPE_CHECKING:
-    from typing import Optional, Type
+    from os import PathLike
+    from typing import Optional, Dict, Type, Union
     from iqa.system.command.command_base import CommandBase
 """
 Executor implementation that uses the "ansible" CLI to
@@ -20,13 +21,17 @@ class ExecutorAnsible(ExecutorBase):
 
     def __init__(
         self,
-        ansible_host: 'Optional[str]' = None,
-        inventory: 'Optional[str]' = None,
-        ansible_user: 'Optional[str]' = None,
+        host: 'Optional[str]' = None,
+        port: 'Optional[int]' = None,
+        user: 'Optional[str]' = None,
+        password: 'Optional[str]' = None,
+        ssh_key_path: 'Optional[Union[str, bytes, PathLike]]' = None,
+        ssh_key_passphrase: 'Optional[Union[str, bytes, PathLike]]' = None,
+        known_hosts_path: 'Optional[Union[str, bytes, PathLike]]' = None,
         ansible_connection: str = 'ssh',
-        module: str = 'raw',
-        executor_name: str = 'ExecutorAnsible',
-        docker_host: 'Optional[str]' = None,
+        ansible_inventory: 'Optional[str]' = None,
+        ansible_module: str = 'raw',
+        # docker_host: 'Optional[str]' = None,
         **kwargs
     ) -> None:
         """
@@ -41,34 +46,45 @@ class ExecutorAnsible(ExecutorBase):
         :param name:
         :param kwargs:
         """
+        args: Dict = locals()
+        del args["self"]
+        del args["kwargs"]
+        del args["__class__"]
+        kwargs.update(args)
         super(ExecutorAnsible, self).__init__(**kwargs)
-        self.ansible_host: Optional[str] = ansible_host
-        self.inventory: Optional[str] = inventory
-        self.ansible_user: str = ansible_user
-        self.ansible_connection: str = ansible_connection
-        self.module: str = module
-        self.name: str = executor_name
-        self.docker_host: str = docker_host
+
+        missing = self._check_required_args(['host'], **kwargs)
+        if missing:
+            raise ValueError(f"One or more mandatory arguments are missing: [{ ', '.join(missing)}]")
+
+        self._connection: str = ansible_connection
+        self._inventory: 'Optional[str]' = ansible_inventory
+        self._module: str = ansible_module
+        # self._docker_host: 'Optional[str]' = docker_host
 
     @staticmethod
     def implementation() -> str:
         return 'ansible'
 
     @property
-    def name(self) -> str:
-        return 'Ansible executor class'
+    def ansible_host(self) -> str:
+        return self._host
+
+    @property
+    def ansible_user(self) -> str:
+        return self._user
 
     def _execute(self, command: 'CommandBase') -> 'ExecutionProcess':
-        command = CommandBaseAnsible.convert(command, ansible_module=self.module)
+        command = CommandBaseAnsible.convert(command, ansible_module=self._module)
 
         ansible_args: list = []
         if self.ansible_user is not None:
-            self._logger.debug('Ansible user: %s' % self.inventory)
+            self._logger.debug('Ansible user: %s' % self._inventory)
             ansible_args += ['-u', self.ansible_user]
 
-        if self.inventory is not None:
-            self._logger.debug('Using inventory: %s' % self.inventory)
-            ansible_args += ['-i', self.inventory]
+        if self._inventory is not None:
+            self._logger.debug('Using inventory: %s' % self._inventory)
+            ansible_args += ['-i', self._inventory]
         else:
             self._logger.debug('Using inventory host: %s' % self.ansible_host)
             ansible_args += ['-i', '%s,' % self.ansible_host]
