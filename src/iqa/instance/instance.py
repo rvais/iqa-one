@@ -53,15 +53,7 @@ class Instance:
         messaging components.
         :return:
         """
-
-        def get_and_remove_key(vars_dict: dict, key: str, default: str = None) -> str:
-            val: str = vars_dict.get(key, default)
-            if key in vars_dict:
-                del vars_dict[key]
-            return val
-
         # Loading all hosts that provide the component variable
-        inventory_hosts: List[Host] = self._inv_mgr.get_hosts()
         inventory_groups: List[Group] = self._inv_mgr.get_groups()
         nodes = {}
 
@@ -87,10 +79,13 @@ class Instance:
                     args: Dict = node_vars.copy()
                     del args['implementation']
                     del args['executor']
+                    del args['ansible_host']
                     del args['ansible_user']
+                    del args['group_names']
 
                     executor = ExecutorFactory.create_executor(
                         implementation=node_vars['executor'],
+                        host=node_vars['ansible_host'],
                         user=node_vars['ansible_user'],
                         **args
                     )
@@ -100,6 +95,11 @@ class Instance:
                     del args['ansible_host']
 
                     node = NodeFactory.create_node(host.name, ip=node_vars['ansible_host'], executor=executor, **args)
+                    if node is None:
+                        warn = f"Unable to create host '{host.name}' due to missing implementation" \
+                               f" '{executor.implementation()}'. Skipping creation of it's components."
+                        self._logger.warning(warn)
+                        continue
                     nodes[host.name] = node
 
                 component: Component = ComponentFactory.create_specified_component(
@@ -145,7 +145,7 @@ class Instance:
         :return:
         :rtype:
         """
-        self.components.append(component)
+        self._components.append(component)
         return component
 
     @property
