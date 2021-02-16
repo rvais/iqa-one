@@ -28,7 +28,7 @@ class CommandBase:
             timeout: int = 0,
             encoding: str = 'utf-8',
             wait_for: bool = False,
-            env: 'Optional[Dict[str, Any]]' = None,
+            env: 'Optional[Dict]' = None,
             **kwargs
     ) -> None:
         """
