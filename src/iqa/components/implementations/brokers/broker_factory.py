@@ -19,23 +19,25 @@ class BrokerFactory(SpecificComponentFactory):
     def get_type(cls) -> 'Type[Component]':
         return cls.__type
 
-    @staticmethod
-    def get_broker_implementations() -> 'List[Type[Broker]]':
+    @classmethod
+    def get_available_implementations(cls) -> 'List[Type[Broker]]':
         return BrokerFactory.__broker_implementations.copy()
 
     @staticmethod
-    def create_component(
-        implementation: str,
-        node: 'Node',
-        **kwargs
-    ) -> 'Broker':
-        for broker in BrokerFactory.get_broker_implementations():
-
+    def create_component(implementation: str, node: 'Node', **kwargs) -> 'Broker':
+        for broker in BrokerFactory.get_available_implementations():
             # Ignore broker with different implementation
             if broker.implementation != implementation:
                 continue
 
-            name: str = '%s-%s-%s' % ('broker', broker.__name__, node.hostname)
-            return broker(name=name, node=node, **kwargs)  # type: ignore
+            # Make sure component has a name
+            name: str
+            if 'name' not in kwargs.keys():
+                name: str = f"Broker-{broker.__name__}-{node.hostname}"
+            else:
+                name = kwargs['name']
+                del kwargs['name']
 
-        raise ValueError('Invalid broker implementation: %s' % implementation)
+            return broker(name=name, node=node, **kwargs)
+
+        raise ValueError(f"Invalid broker implementation: {implementation}")
