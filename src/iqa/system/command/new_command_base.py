@@ -7,7 +7,7 @@ from iqa.system.command.new_options_base import EmptyOptions
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Optional, List, Callable, Union, Dict
+    from typing import Optional, List, Callable, Union, Dict, Any
     from iqa.system.command.new_options_base import OptionsBase
     from os import PathLike
 
@@ -29,6 +29,7 @@ class CommandBase:
             encoding: str = 'utf-8',
             wait_for: bool = False,
             env: 'Optional[Dict]' = None,
+            args_before_opts: bool = True,
             **kwargs
     ) -> None:
         self._args: List[str] = args if args is not None else []
@@ -45,11 +46,48 @@ class CommandBase:
         self.env: dict = env
 
         self._options: Optional[OptionsBase] = None
+        self._args_before_opts: bool = args_before_opts
 
         self._timeout_callbacks: List[Callable] = []
         self._interrupt_callbacks: List[Callable] = []
         self._pre_exec_hooks: List[Callable] = []
         self._post_exec_hooks: List[Callable] = []
+
+    def build(self) -> 'List[str]':
+        """
+        Builds the external client command based on all
+        ClientOptionsBase properties available on implementing class,
+        using optconstruct to produce the arguments list.
+        :return:
+        """
+
+        # Crate base list for the command
+        command: List[str] = []
+        if self._path_to_exec is not None:
+            command.append(self._path_to_exec)
+
+        # implementation of the options classes ensures that only populated ones are returned
+        all_options: Dict = {}
+        key: str
+        value: Any
+        for key, value in self._options.to_dictionary().items():
+            all_options[key.replace('_', '-')] = value
+
+        # Generates parameters list (only allowed will be added)
+        params: List[str] = []
+        for opt in self._options.valid_options():
+            if opt.satisfied(all_options):
+                params.extend(opt.generate(all_options).split(' ', 1))
+
+        # based on selected ordering extend command first with arguments, then options or vice versa
+        if self._args_before_opts:
+            command.extend(self._args)
+            command.extend(params)
+        else:
+            command.extend(params)
+            command.extend(self._args)
+
+        return command
 
     @property
     def args(self) -> 'List[str]':
