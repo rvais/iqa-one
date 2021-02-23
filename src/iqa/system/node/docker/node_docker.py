@@ -15,7 +15,7 @@ from iqa.system.executor.executor_factory import ExecutorFactory
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Optional, Union
+    from typing import Optional, Union, Dict
     from docker.models.containers import Container
     from iqa.system.executor.docker.executor_docker import ExecutorDocker
 
@@ -34,15 +34,23 @@ class NodeDocker(Node):
             docker_network: str = '',
             ip: 'Optional[str]' = None,
             executor: 'Optional[ExecutorDocker]' = None,
-            name: 'Optional[str]' = None
+            name: 'Optional[str]' = None,
+            **kwargs
     ) -> None:
         if executor is None:
             executor = ExecutorFactory.create_executor(self.implementation)
 
-        self.hostname: str = hostname
+        args: Dict = locals()
+        del args["self"]
+        del args["kwargs"]
+        del args["__class__"]
+        kwargs.update(args)
+
+        super(NodeDocker, self).__init__(**kwargs)
+
+        self.docker_host: str = docker_host
         self.docker_network: str = docker_network
         self.container: Container = self._get_container(docker_host=docker_host)
-        super(NodeDocker, self).__init__(hostname, executor, ip=ip, name=name)
 
     def ping(self) -> bool:
         """Send ping to Docker node"""

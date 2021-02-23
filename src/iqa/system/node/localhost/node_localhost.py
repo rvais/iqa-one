@@ -10,7 +10,7 @@ from iqa.system.executor.executor_factory import ExecutorFactory
 from iqa.system.node.base.node import Node
 
 if TYPE_CHECKING:
-    from typing import Optional, Union
+    from typing import Optional, Union, Dict
     from iqa.system.command.command_base import CommandBase
     from iqa.system.executor.base.executor import ExecutorBase
     from iqa.system.executor.base.execution import ExecutionBase
@@ -28,11 +28,19 @@ class NodeLocal(Node):
         hostname: str,
         ip: 'Optional[str]' = None,
         executor: 'Optional[Union[ExecutorBase, ExecutorLocal, ExecutorAsyncio]]' = None,
-        name: 'Optional[str]' = "localhost"
+        name: 'Optional[str]' = "localhost",
+        **kwargs
     ) -> None:
         if executor is None:
             executor = ExecutorFactory.create_executor(self.implementation)
-        super(NodeLocal, self).__init__(hostname, executor, ip=ip, name=name)
+
+        args: Dict = locals()
+        del args["self"]
+        del args["kwargs"]
+        del args["__class__"]
+        kwargs.update(args)
+
+        super(NodeLocal, self).__init__(**kwargs)
 
     def ping(self) -> bool:
         """Send ping to node"""

@@ -4,7 +4,7 @@ from inspect import signature
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Optional
+    from typing import Optional, Dict
     from iqa.system.node.base.node import Node
 
 
@@ -14,11 +14,23 @@ class Component(ABC):
     """
 
     def __init__(self, name: 'Optional[str]' = None, node: 'Optional[Node]' = None, **kwargs) -> None:
-        if name is None:
-            name = f"{self.__class__.__name__}_at_{node.hostname}"
-        self._instance_name: str = name
+        super(Component, self).__init__(**kwargs)
         self._node: Node = node
-        self._logger: logging.Logger = logging.getLogger(self._instance_name)
+
+        # Changes necessary due to the fact this class is used as one of the bases in multiple inheritance
+        if name is None and node is not None:
+            name = f"{self.__class__.__name__}_at_{node.hostname}"
+        elif name is None and node is None:
+            name = self.__class__.__name__
+
+        if not hasattr(self, '_name'):
+            self._name = name
+        elif not hasattr(self, '_name') and name is None:
+            self._name = self.__class__.__name__
+
+        if not hasattr(self, '_logger') or not isinstance(self._logger, logging.Logger):
+            self._logger: logging.Logger = logging.getLogger(self._name)
+        self._logger: logging.Logger = logging.getLogger(self._name)
 
     @property
     @abstractmethod
@@ -30,8 +42,8 @@ class Component(ABC):
         return self._node
 
     @property
-    def instance_name(self) -> 'Optional[str]':
-        return self._instance_name
+    def name(self) -> 'Optional[str]':
+        return self._name
 
     @staticmethod
     def call_if_all_arguments_in_kwargs(func, **kwargs) -> None:
@@ -54,7 +66,7 @@ class Component(ABC):
             return
 
         # Calling function if all args present in kwargs
-        arg_dict: dict = {
+        arg_dict: Dict = {
             k: v
             for k, v in kwargs.items()
             if k in list(signature(func).parameters.keys())

@@ -7,7 +7,6 @@ if TYPE_CHECKING:
 
 
 class MessagingServer(ABC):
-    implementation = NotImplemented
 
     def __init__(self, **kwargs) -> None:
         self.listeners: List[Listener] = []

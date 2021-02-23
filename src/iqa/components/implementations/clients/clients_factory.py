@@ -71,7 +71,7 @@ class OldClientFactory(object):
 
     @staticmethod
     def create_clients(
-        implementation: str, node: Node,
+        implementation: str, node: 'Node',
         executor,  #: ExecutorBase,
         **kwargs
     ) -> list:

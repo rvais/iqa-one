@@ -3,63 +3,37 @@ from urllib.parse import urlparse, urlunparse, unquote
 
 from iqa.abstract.client.sender import Sender
 from iqa.components.implementations.clients.external.java.client import ClientJava
-from iqa.components.implementations.clients.external.java.command.java_commands import JavaSenderClientCommand
+from iqa.components.implementations.clients.external.java.command.new_java_command import JavaSenderCommand
+import os.path
 
 if TYPE_CHECKING:
     from os import PathLike
-    from typing import Optional, Any
+    from typing import Optional, Union
     from iqa.system.node.base.node import Node
+    from iqa.abstract.listener import Listener
     from iqa.abstract.message.message import Message
 
 
 class SenderJava(ClientJava, Sender):
     """External Java Qpid JMS sender client."""
 
-    _command: JavaSenderClientCommand
-    path_to_exec: 'Optional[PathLike[Any]]'
-
-    def __init__(self, name: str, node: 'Node', path_to_exec: 'Optional[PathLike[Any]]' = None, **kwargs) -> None:
-        super(SenderJava, self).__init__(name, node, **kwargs)
-        self.path_to_exec = path_to_exec
-
-    def _set_url(self, url: str) -> None:
-        p_url = urlparse(url)
-        self._command.control.broker = '{}://{}:{}'.format(
-            p_url.scheme or 'amqp', p_url.hostname or '127.0.0.1', p_url.port or '5672'
-        )
-        self._command.control.address = urlunparse(
-            (
-                '',
-                '',
-                p_url.path or '',
-                p_url.params or '',
-                p_url.query or '',
-                p_url.fragment or '',
-            )
-        )
-
-        # Java client expects unquoted username and passwords
-        if p_url.username:
-            self._command.connection.conn_username = unquote(p_url.username)
-        if p_url.password:
-            self._command.connection.conn_password = unquote(p_url.password)
-
-    def set_auth_mechs(self, mechs: str) -> None:
-        self._command.connection.conn_auth_mechanisms = mechs
-
-    def set_ssl_auth(
+    def __init__(
         self,
-        pem_file: str = None,
-        key_file: str = None,
-        keystore: str = None,
-        keystore_pass: str = None,
-        keystore_alias: str = None,
+        path_to_exec: 'Optional[Union[str, bytes, PathLike]]' = None,
+        name: 'Optional[str]' = None,
+        node: 'Optional[Node]' = None,
+        **kwargs
     ) -> None:
-        self._command.connection.conn_ssl_keystore_location = keystore
-        self._command.connection.conn_ssl_keystore_password = keystore_pass
-        self._command.connection.conn_ssl_key_alias = keystore_alias
-        self._command.connection.conn_ssl_verify_host = 'false'
-        self._command.connection.conn_ssl_trust_all = 'true'
+        # dump arguments into dictionary
+        inputs = locals()
+        # remove self and kwargs variables as they would mess things up
+        del inputs['self']
+        del inputs['kwargs']
+        # update kwargs to pass in super().__init__()
+        if 'version' not in kwargs.keys():
+            inputs['version'] = self.default_version
+        kwargs.update(inputs)
+        super(SenderJava, self).__init__(**kwargs)
 
     def _new_command(
         self,
@@ -68,9 +42,10 @@ class SenderJava(ClientJava, Sender):
         daemon: bool = True,
         timeout: int = ClientJava.TIMEOUT,
         encoding: str = 'utf-8',
-    ) -> JavaSenderClientCommand:
-        return JavaSenderClientCommand(
-            path_to_exec=self.path_to_exec,
+    ) -> JavaSenderCommand:
+        path_to_exec: 'Union[str, bytes, PathLike]' = os.path.join(self.path_to_exec, self.name)
+        return JavaSenderCommand(
+            path_to_exec=path_to_exec,
             stdout=stdout,
             stderr=stderr,
             daemon=daemon,
@@ -79,8 +54,11 @@ class SenderJava(ClientJava, Sender):
         )
 
     def _send(self, message: 'Message', **kwargs) -> None:
-        self._command.message.msg_content = message.application_data
+        self._command.options.msg_content = message.application_data
         self.execution = self.node.execute(self.command)
 
     def connect(self) -> bool:
+        raise NotImplementedError
+
+    def set_endpoint(self, listener: 'Listener') -> None:
         raise NotImplementedError

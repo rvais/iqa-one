@@ -37,7 +37,7 @@ class Broker(MessagingServer):
             'broker_name': broker_name,
             'broker_path': broker_path,
         }
-        for field, value in required_fields:
+        for field, value in required_fields.items():
             if value is None:
                 logging.error('Missing requirement broker parameter: %s' % field)
 

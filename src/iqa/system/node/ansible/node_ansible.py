@@ -12,7 +12,7 @@ from iqa.system.executor.executor_factory import ExecutorFactory
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Optional, List, Type, Union
+    from typing import Optional, Dict, Union
     from iqa.system.executor.ansible.executor_ansible import ExecutorAnsible
     from iqa.system.executor.base.execution import ExecutionBase
 
@@ -27,11 +27,19 @@ class NodeAnsible(Node):
         hostname: str,
         ip: 'Optional[str]' = None,
         executor: 'Optional[ExecutorAnsible]' = None,
-        name: 'Optional[str]' = None
+        name: 'Optional[str]' = None,
+        **kwargs
     ) -> None:
         if executor is None:
             executor = ExecutorFactory.create_executor(self.implementation)
-        super(NodeAnsible, self).__init__(hostname, executor, ip=ip, name=name)
+
+        args: Dict = locals()
+        del args["self"]
+        del args["kwargs"]
+        del args["__class__"]
+        kwargs.update(args)
+
+        super(NodeAnsible, self).__init__(**kwargs)
 
     def ping(self) -> bool:
         """Send ping to Ansible node"""
@@ -50,7 +58,7 @@ class NodeAnsible(Node):
 
         cmd_ping: CommandBaseAnsible = CommandBaseAnsible(
             ansible_module='setup',
-            ansible_args='filter=ansible_default_ipv4',
+            ansible_args=['filter=ansible_default_ipv4'],
             stdout=True,
             stderr=True,
             timeout=20,

@@ -32,6 +32,7 @@ class CommandBase:
             args_before_opts: bool = True,
             **kwargs
     ) -> None:
+        _ = kwargs
         self._args: List[str] = args if args is not None else []
         self._path_to_exec: Optional[Union[str, bytes, PathLike]] = path_to_exec
         self.stdout: bool = stdout
@@ -54,6 +55,9 @@ class CommandBase:
         self._post_exec_hooks: List[Callable] = []
 
     def build(self) -> 'List[str]':
+        return self._build()
+
+    def _build(self) -> 'List[str]':
         """
         Builds the external client command based on all
         ClientOptionsBase properties available on implementing class,
@@ -70,12 +74,12 @@ class CommandBase:
         all_options: Dict = {}
         key: str
         value: Any
-        for key, value in self._options.to_dictionary().items():
+        for key, value in self.options.to_dictionary().items():
             all_options[key.replace('_', '-')] = value
 
         # Generates parameters list (only allowed will be added)
         params: List[str] = []
-        for opt in self._options.valid_options():
+        for opt in self.options.valid_options():
             if opt.satisfied(all_options):
                 params.extend(opt.generate(all_options).split(' ', 1))
 

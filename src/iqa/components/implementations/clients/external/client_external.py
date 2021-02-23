@@ -1,19 +1,17 @@
 from typing import TYPE_CHECKING
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 from iqa.abstract.client.messaging_client import MessagingClient
-from iqa.components.abstract.component import Component
-from iqa.components.implementations.clients.external.command.client_command import ClientCommandBase
+from iqa.components.abstract.external_component import ExternalComponent
+from iqa.system.command.new_command_base import CommandBase
 
 if TYPE_CHECKING:
-    from typing import Optional
-    # from os import PathLike Not used for now, but might replace path_to_exec in subclasses if appropriate
+    from typing import Optional, Union
+    from os import PathLike
     from iqa.system.node.base.node import Node
-    from iqa.abstract.listener import Listener
-    from iqa.system.executor.base.execution import ExecutionBase
 
 
-class ClientExternal(Component, MessagingClient):
+class ClientExternal(MessagingClient, ExternalComponent, ABC):
     """
     Represents abstract clients that are executed externally as command line applications.
     """
@@ -22,10 +20,23 @@ class ClientExternal(Component, MessagingClient):
     # As mixing --timeout with --count is causing issues
     TIMEOUT: int = 90
 
-    def __init__(self, name: str, node: 'Node', **kwargs) -> None:
-        super(ClientExternal, self).__init__(name, node)
-        self._execution: Optional[ExecutionBase] = None
-        self._command: ClientCommandBase = ClientCommandBase([])
+    def __init__(
+            self,
+            path_to_exec: 'Optional[Union[str, bytes, PathLike]]' = None,
+            name: 'Optional[str]' = None,
+            node: 'Optional[Node]' = None,
+            message_buffer: bool = True,
+            **kwargs
+    ) -> None:
+        # dump arguments into dictionary
+        inputs = locals()
+        # remove self and kwargs variables as they would mess things up
+        del inputs['self']
+        del inputs['kwargs']
+        kwargs.update(inputs)
+
+        super(ClientExternal, self).__init__(**kwargs)
+        self._command: Optional[CommandBase] = None
         self._url: Optional[str] = None
         self.reset_command()
 
@@ -34,7 +45,9 @@ class ClientExternal(Component, MessagingClient):
             self.call_if_all_arguments_in_kwargs(func, **kwargs)
 
     @property
-    def command(self) -> ClientCommandBase:
+    def command(self) -> 'CommandBase':
+        if self._command is None:
+            self.reset_command()
         return self._command
 
     def reset_command(self) -> None:
@@ -43,20 +56,8 @@ class ClientExternal(Component, MessagingClient):
         :return:
         """
         self._command = self._new_command(
-            stdout=True, timeout=ClientExternal.TIMEOUT, daemon=True
+            stdout=True, stderr=True, timeout=ClientExternal.TIMEOUT, daemon=True
         )
-
-    def get_url(self) -> 'Optional[str]':
-        return self._url
-
-    def set_url(self, url: str) -> None:
-        """
-        Saves url property internally and invoke concrete _set_url implementation
-        which is responsible for properly using it according to each external client needs.
-        :param url:
-        :return:
-        """
-        self._set_url(url)
 
     @abstractmethod
     def _new_command(
@@ -66,7 +67,7 @@ class ClientExternal(Component, MessagingClient):
         daemon: bool = False,
         timeout: int = 0,
         encoding: str = 'utf-8',
-    ) -> ClientCommandBase:
+    ) -> CommandBase:
         """
         Must return a ClientCommand implementation for the command that is related
         with the concrete client.
@@ -80,17 +81,7 @@ class ClientExternal(Component, MessagingClient):
         raise NotImplementedError
 
     @abstractmethod
-    def _set_url(self, url: str) -> None:
-        """
-        This method must be implemented by each concrete client by adjusting url parts
-        into appropriate command elements, in order to execute it correctly.
-        :param url:
-        :return:
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def set_auth_mechs(self, mechs: str):
+    def set_auth_mechs(self, mechs: 'Optional[str]' = None) -> None:
         """
         Implementing clients must know how to adjust mechanisms (if supported).
         :param mechs:
@@ -106,7 +97,7 @@ class ClientExternal(Component, MessagingClient):
         keystore: 'Optional[str]' = None,
         keystore_pass: 'Optional[str]' = None,
         keystore_alias: 'Optional[str]' = None,
-    ):
+    ) -> None:
         """
         Allows implementing clients to use the SSL credentials according to each implementing model.
         :param pem_file:
@@ -116,16 +107,3 @@ class ClientExternal(Component, MessagingClient):
         :param keystore_alias:
         :return:
         """
-        raise NotImplementedError
-
-    @abstractmethod
-    def set_endpoint(self, listener: 'Listener') -> None:
-        raise NotImplementedError
-
-    @abstractmethod
-    def connect(self) -> bool:
-        raise NotImplementedError
-
-    @property
-    def implementation(self) -> str:
-        return 'External client'
